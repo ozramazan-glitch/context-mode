@@ -77,6 +77,41 @@ npm run serve              # http://localhost:8123
 
 ---
 
+## Windows .exe üretme
+
+```bash
+npm install
+npm run dist:win           # dist/release/ altına kurulum + taşınabilir .exe
+```
+
+Üretilenler:
+
+| Çıktı | Ne işe yarar |
+|---|---|
+| `YapiCAD-Kurulum-0.1.0.exe` | NSIS kurulum sihirbazı; klasör seçtirir, kısayol oluşturur, kaldırıcı ekler |
+| `YapiCAD-Tasinabilir-0.1.0.exe` | Tek dosya taşınabilir; kurulum yapmadan çalışır |
+| `win-unpacked/YapiCAD.exe` | Açılmış klasör; exe + Electron çalışma zamanı yan yana |
+
+**Bu komut Windows'ta doğrudan çalışır.** Linux'ta paketleme aşaması (`win-unpacked`,
+gerçek `YapiCAD.exe`) Wine olmadan tamamlanır, ancak `.exe` sarmalayıcılarını
+(NSIS kurulum ve taşınabilir) üreten son adım **Wine ister**:
+
+```bash
+sudo apt install wine64 wine32   # veya dağıtımınızın wine paketi
+npm run dist:win
+```
+
+Wine yoksa `dist/release/win-unpacked/` klasörünü zipleyip dağıtabilirsiniz;
+içindeki `YapiCAD.exe` çalışan Windows uygulamasıdır, yanındaki DLL'ler ve
+`resources/` klasörüyle birlikte taşınması gerekir.
+
+İmzalama yapılandırılmamıştır; imzasız exe'de Windows SmartScreen ilk
+çalıştırmada uyarı gösterir ("Daha fazla bilgi" → "Yine de çalıştır").
+
+Linux paketi için: `npm run dist:linux` (AppImage).
+
+---
+
 ## Klavye
 
 | Tuş | İş | Tuş | İş |
@@ -99,6 +134,7 @@ npm run serve              # http://localhost:8123
 apps/yapicad/
 ├── main.js              Electron ana süreç: pencere, yerel menü, dosya diyalogları (IPC)
 ├── preload.js           contextBridge — renderer'a yalnızca 5 işlev açılır
+├── assets/              Uygulama simgesi: icon.svg (kaynak), icon.ico (Windows), icon.png (Linux)
 ├── renderer/
 │   ├── index.html       Şerit, paneller, durum çubuğu, SVG ikon seti
 │   ├── css/app.css      Koyu/açık tema, CSS değişkenleriyle
