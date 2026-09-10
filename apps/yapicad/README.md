@@ -79,34 +79,62 @@ npm run serve              # http://localhost:8123
 
 ## Windows .exe üretme
 
-```bash
+### Windows'ta (önerilen — tam pipeline çalışır)
+
+**Gerekli:** [Node.js](https://nodejs.org) 18 veya üstü. Başka hiçbir şey gerekmez;
+Visual Studio, Python, Wine hiçbiri lazım değil (projede yerel/native modül yok).
+
+Komut isteminde (`cmd` veya PowerShell), bu klasörün içinde:
+
+```bat
+cd apps\yapicad
 npm install
-npm run dist:win           # dist/release/ altına kurulum + taşınabilir .exe
-```
-
-Üretilenler:
-
-| Çıktı | Ne işe yarar |
-|---|---|
-| `YapiCAD-Kurulum-0.1.0.exe` | NSIS kurulum sihirbazı; klasör seçtirir, kısayol oluşturur, kaldırıcı ekler |
-| `YapiCAD-Tasinabilir-0.1.0.exe` | Tek dosya taşınabilir; kurulum yapmadan çalışır |
-| `win-unpacked/YapiCAD.exe` | Açılmış klasör; exe + Electron çalışma zamanı yan yana |
-
-**Bu komut Windows'ta doğrudan çalışır.** Linux'ta paketleme aşaması (`win-unpacked`,
-gerçek `YapiCAD.exe`) Wine olmadan tamamlanır, ancak `.exe` sarmalayıcılarını
-(NSIS kurulum ve taşınabilir) üreten son adım **Wine ister**:
-
-```bash
-sudo apt install wine64 wine32   # veya dağıtımınızın wine paketi
 npm run dist:win
 ```
 
-Wine yoksa `dist/release/win-unpacked/` klasörünü zipleyip dağıtabilirsiniz;
-içindeki `YapiCAD.exe` çalışan Windows uygulamasıdır, yanındaki DLL'ler ve
-`resources/` klasörüyle birlikte taşınması gerekir.
+İlk `npm install` Electron çalışma zamanını indirir (~100 MB), birkaç dakika
+sürer. `dist:win` sonunda `dist\release\` klasöründe:
 
-İmzalama yapılandırılmamıştır; imzasız exe'de Windows SmartScreen ilk
-çalıştırmada uyarı gösterir ("Daha fazla bilgi" → "Yine de çalıştır").
+| Çıktı | Ne işe yarar |
+|---|---|
+| `YapiCAD-Kurulum-0.1.0.exe` | Kurulum sihirbazı; klasör seçtirir, Başlat menüsü ve masaüstü kısayolu ekler, kaldırıcı bırakır. Yönetici hakkı istemez (kullanıcı bazlı kurulum). |
+| `YapiCAD-Tasinabilir-0.1.0.exe` | Tek dosya taşınabilir sürüm; kurulmaz, çift tıklayınca çalışır. USB'ye atılabilir. |
+| `win-unpacked\YapiCAD.exe` | Açılmış klasör: exe + DLL'ler + `resources\`. Dağıtırken **klasörün tamamı** taşınmalı. |
+
+Sadece taşınabilir exe yeterliyse: `npm run dist:win-portable`.
+
+**İmzalama yok.** İmzasız exe'de Windows SmartScreen ilk çalıştırmada
+"Bilinmeyen yayımcı" uyarısı verir: *Daha fazla bilgi → Yine de çalıştır*.
+Bu, kod imzalama sertifikası satın alınmadıkça kaçınılmazdır.
+
+### Linux'ta Windows exe'si üretme
+
+Paketleme aşaması (`win-unpacked` ve içindeki gerçek `YapiCAD.exe`) Wine
+olmadan tamamlanır:
+
+```bash
+npm run dist:win -- --dir     # yalnızca win-unpacked/
+```
+
+Ancak `.exe` sarmalayıcıları (NSIS kurulum ve taşınabilir) **Wine ister**.
+Yalnız `wine64` yetmez, tam paket gerekir:
+
+```bash
+sudo apt install wine wine64 wine32   # dağıtımınıza göre değişir
+npm run dist:win
+```
+
+Wine kuramıyorsanız `dist/release/win-unpacked/` klasörünü ziplemek de
+çalışan bir dağıtımdır (~110 MB).
+
+### Linux paketi
+
+```bash
+npm run dist:linux         # AppImage
+```
+
+macOS paketi için ayrı bir hedef tanımlanmadı; `.dmg` üretmek Apple'ın
+araç zinciri gereği macOS makinesi ister.
 
 Linux paketi için: `npm run dist:linux` (AppImage).
 
