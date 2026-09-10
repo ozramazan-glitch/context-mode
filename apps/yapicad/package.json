@@ -1,0 +1,15 @@
+{
+  "name": "yapicad",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Betonarme kalıp planı editörü — aks sistemi, kolon/kiriş/perde/döşeme modelleme ve 3B önizleme. Yapısal analiz içermez.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:linux-ci": "xvfb-run -a electron . --no-sandbox",
+    "serve": "node ../../apps/yapicad/tools/serve.js"
+  },
+  "devDependencies": {
+    "electron": "^33.2.0"
+  }
+}
