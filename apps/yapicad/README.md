@@ -57,12 +57,22 @@ Linux'ta masaüstü oturumu olmadan (CI, konteyner) denemek için:
 npm run start:linux-ci     # xvfb-run ile
 ```
 
-Electron kurmadan yalnızca arayüzü görmek isterseniz — tüm çizim ve modelleme
-tarayıcıda da çalışır, sadece yerel dosya diyalogları yerine indirme/dosya
-seçici kullanılır:
+### Kurulumsuz kullanım
+
+Tüm çizim ve modelleme tarayıcıda da çalışır; tek fark, yerel dosya
+diyalogları yerine indirme/dosya seçici kullanılmasıdır.
+
+**Tek dosya (en kolay).** Her şeyi tek bir HTML'e gömer; çift tıklayınca açılır,
+sunucu ve kurulum istemez:
 
 ```bash
-node tools/serve.js        # http://localhost:8123
+npm run build:single       # dist/yapicad-tek-dosya.html  (~158 KB)
+```
+
+**Yerel sunucu.** Kaynak dosyalar üzerinde geliştirirken:
+
+```bash
+npm run serve              # http://localhost:8123
 ```
 
 ---
