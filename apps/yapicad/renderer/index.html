@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="tr" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YapıCAD — Betonarme Kalıp Planı Editörü</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232f7fd8'/%3E%3Cpath d='M8 9h4l4 6 4-6h4l-6 9v5h-4v-5z' fill='white'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<svg id="sprite" aria-hidden="true" style="display:none">
+  <symbol id="i-new" viewBox="0 0 24 24"><path d="M6 2h8l4 4v16H6z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M14 2v5h5" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M3 6h6l2 2h10v11H3z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M4 4h13l3 3v13H4z" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4v6h8V4M8 20v-6h8v6" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 8H5V4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 8a8 8 0 1 1 2 9" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M15 8h4V4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M19 8a8 8 0 1 0-2 9" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="i-select" viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.6L10 20z" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-move" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M12 2l-3 3M12 2l3 3M12 22l-3-3M12 22l3-3M2 12l3-3M2 12l3 3M22 12l-3-3M22 12l-3 3" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="4" y="4" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="9" y="9" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-delete" viewBox="0 0 24 24"><path d="M4 6h16M9 6V3h6v3M6 6l1.2 15h9.6L18 6" fill="none" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-measure" viewBox="0 0 24 24"><path d="M2 15L15 2l7 7L9 22z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M6 13l2 2M9 10l2 2M12 7l2 2" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-column" viewBox="0 0 24 24"><rect x="7" y="4" width="10" height="16" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M7 8h10M7 16h10" stroke="currentColor" stroke-width="1"/></symbol>
+  <symbol id="i-beam" viewBox="0 0 24 24"><rect x="2" y="9" width="20" height="6" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M2 12h20" stroke="currentColor" stroke-width="1" stroke-dasharray="3 2"/></symbol>
+  <symbol id="i-wall" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="10" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M3 12h18M9 7v5M15 12v5" stroke="currentColor" stroke-width="1.1"/></symbol>
+  <symbol id="i-slab" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-dasharray="4 3"/><path d="M7 17L17 7" stroke="currentColor" stroke-width="1.2"/></symbol>
+  <symbol id="i-axisx" viewBox="0 0 24 24"><path d="M12 2v20" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 3 2 3"/><circle cx="12" cy="4" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  <symbol id="i-axisy" viewBox="0 0 24 24"><path d="M2 12h20" stroke="currentColor" stroke-width="1.6" stroke-dasharray="7 3 2 3"/><circle cx="4" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="i-plan" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"/><rect x="6" y="6" width="4" height="4" fill="currentColor"/><rect x="14" y="14" width="4" height="4" fill="currentColor"/></symbol>
+  <symbol id="i-cube" viewBox="0 0 24 24"><path d="M12 2l9 5v10l-9 5-9-5V7z" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M12 12l9-5M12 12v10M12 12L3 7" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-split" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 3v18" stroke="currentColor" stroke-width="1.6"/></symbol>
+  <symbol id="i-zoom" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M16 16l5 5M8 11h6M11 8v6" stroke="currentColor" stroke-width="1.5"/></symbol>
+  <symbol id="i-storyadd" viewBox="0 0 24 24"><path d="M3 18h18M3 13h18M3 8h10" stroke="currentColor" stroke-width="1.7"/><path d="M17 4v7M13.5 7.5h7" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="i-storycopy" viewBox="0 0 24 24"><path d="M3 20h18M3 14h18" stroke="currentColor" stroke-width="1.7"/><path d="M12 3v8M8.5 6.5L12 3l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="i-storydel" viewBox="0 0 24 24"><path d="M3 18h18M3 13h18M3 8h10" stroke="currentColor" stroke-width="1.7"/><path d="M14 4l7 7M21 4l-7 7" stroke="currentColor" stroke-width="1.7"/></symbol>
+  <symbol id="i-theme" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 4a8 8 0 0 0 0 16z" fill="currentColor"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v6M12 7.5v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 9h18M3 14h18M10 4v16" stroke="currentColor" stroke-width="1.2"/></symbol>
+  <symbol id="i-png" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M3 16l5-5 4 4 3-3 6 6" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="8.5" cy="8.5" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-magic" viewBox="0 0 24 24"><path d="M4 20L16 8M14 4l1.2 2.8L18 8l-2.8 1.2L14 12l-1.2-2.8L10 8l2.8-1.2z" fill="none" stroke="currentColor" stroke-width="1.5"/></symbol>
+</svg>
+
+<div id="app">
+
+  <!-- ------------------------------------------------------------ başlık -->
+  <header id="titlebar">
+    <div class="brand"><span class="logo">Y</span> YapıCAD <span class="ver">0.1</span></div>
+    <div class="qat">
+      <button class="qbtn" data-cmd="file.new" title="Yeni proje (Ctrl+N)"><svg><use href="#i-new"/></svg></button>
+      <button class="qbtn" data-cmd="file.open" title="Aç (Ctrl+O)"><svg><use href="#i-open"/></svg></button>
+      <button class="qbtn" data-cmd="file.save" title="Kaydet (Ctrl+S)"><svg><use href="#i-save"/></svg></button>
+      <span class="qsep"></span>
+      <button class="qbtn" data-cmd="edit.undo" id="btnUndo" title="Geri al (Ctrl+Z)"><svg><use href="#i-undo"/></svg></button>
+      <button class="qbtn" data-cmd="edit.redo" id="btnRedo" title="Yinele (Ctrl+Y)"><svg><use href="#i-redo"/></svg></button>
+    </div>
+    <div class="title-center"><span id="projTitle">Adsız Proje</span><span id="dirtyDot" hidden>•</span></div>
+    <div class="title-right">
+      <button class="qbtn" data-cmd="view.theme" title="Tema değiştir"><svg><use href="#i-theme"/></svg></button>
+      <button class="qbtn" data-cmd="help.about" title="Hakkında / kapsam"><svg><use href="#i-info"/></svg></button>
+    </div>
+  </header>
+
+  <!-- ------------------------------------------------------------- şerit -->
+  <nav id="ribbon">
+    <div class="rtabs" role="tablist">
+      <button class="rtab active" data-tab="home">Giriş</button>
+      <button class="rtab" data-tab="rc">Betonarme</button>
+      <button class="rtab" data-tab="axis">Akslar</button>
+      <button class="rtab" data-tab="story">Katlar</button>
+      <button class="rtab" data-tab="view">Görünüm</button>
+      <button class="rtab" data-tab="calc">Metraj</button>
+    </div>
+
+    <div class="rpanels">
+      <!-- GİRİŞ -->
+      <section class="rpanel active" data-tab="home">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="select"><svg><use href="#i-select"/></svg><span>Seç</span></button>
+            <button class="rbtn big tool" data-tool="move"><svg><use href="#i-move"/></svg><span>Taşı</span></button>
+            <button class="rbtn big tool" data-tool="copy"><svg><use href="#i-copy"/></svg><span>Kopyala</span></button>
+            <button class="rbtn big" data-cmd="edit.delete"><svg><use href="#i-delete"/></svg><span>Sil</span></button>
+          </div>
+          <div class="rlabel">Düzenle</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="measure"><svg><use href="#i-measure"/></svg><span>Ölçüm</span></button>
+            <div class="rstack">
+              <button class="rbtn sm" data-cmd="edit.selectAll">Tümünü seç</button>
+              <button class="rbtn sm" data-cmd="edit.deselect">Seçimi bırak</button>
+              <button class="rbtn sm" data-cmd="edit.undo">Geri al</button>
+            </div>
+          </div>
+          <div class="rlabel">Araçlar</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big" data-cmd="file.new"><svg><use href="#i-new"/></svg><span>Yeni</span></button>
+            <button class="rbtn big" data-cmd="file.open"><svg><use href="#i-open"/></svg><span>Aç</span></button>
+            <button class="rbtn big" data-cmd="file.save"><svg><use href="#i-save"/></svg><span>Kaydet</span></button>
+            <button class="rbtn big" data-cmd="file.png"><svg><use href="#i-png"/></svg><span>PNG</span></button>
+          </div>
+          <div class="rlabel">Dosya</div>
+        </div>
+      </section>
+
+      <!-- BETONARME -->
+      <section class="rpanel" data-tab="rc">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="column"><svg><use href="#i-column"/></svg><span>Kolon</span></button>
+            <div class="rfields">
+              <label>Kesit
+                <select id="colPreset"></select>
+              </label>
+              <label>Biçim
+                <select id="colShape"><option value="rect">Dikdörtgen</option><option value="circle">Dairesel</option></select>
+              </label>
+              <label class="two">
+                <span>b <input type="number" id="colB" min="20" max="300" step="5"></span>
+                <span>h <input type="number" id="colH" min="20" max="300" step="5"></span>
+              </label>
+              <label>Dönme (°) <input type="number" id="colRot" min="-180" max="180" step="15"></label>
+            </div>
+          </div>
+          <div class="rlabel">Kolon (S)</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="beam"><svg><use href="#i-beam"/></svg><span>Kiriş</span></button>
+            <div class="rfields">
+              <label>Kesit <select id="beamPreset"></select></label>
+              <label class="two">
+                <span>b <input type="number" id="beamB" min="15" max="150" step="5"></span>
+                <span>h <input type="number" id="beamH" min="20" max="200" step="5"></span>
+              </label>
+            </div>
+          </div>
+          <div class="rlabel">Kiriş (K)</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="wall"><svg><use href="#i-wall"/></svg><span>Perde</span></button>
+            <div class="rfields"><label>Kalınlık t <input type="number" id="wallT" min="15" max="100" step="5"></label></div>
+          </div>
+          <div class="rlabel">Perde (P)</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="slab"><svg><use href="#i-slab"/></svg><span>Döşeme</span></button>
+            <div class="rfields">
+              <label>Kalınlık h <input type="number" id="slabT" min="8" max="60" step="1"></label>
+              <button class="rbtn sm" data-cmd="rc.slabFromAxes">Aks gözlerini doldur</button>
+            </div>
+          </div>
+          <div class="rlabel">Döşeme (D)</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rfields">
+              <label>Beton <select id="matConcrete"></select></label>
+              <label>Donatı çeliği <select id="matSteel"></select></label>
+            </div>
+          </div>
+          <div class="rlabel">Malzeme</div>
+        </div>
+      </section>
+
+      <!-- AKSLAR -->
+      <section class="rpanel" data-tab="axis">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big tool" data-tool="axisX"><svg><use href="#i-axisx"/></svg><span>Düşey aks</span></button>
+            <button class="rbtn big tool" data-tool="axisY"><svg><use href="#i-axisy"/></svg><span>Yatay aks</span></button>
+          </div>
+          <div class="rlabel">Tekil aks</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rfields wide">
+              <label>Yatay açıklıklar (m, virgülle) <input type="text" id="gridSpansX" value="5, 5, 5"></label>
+              <label>Düşey açıklıklar (m, virgülle) <input type="text" id="gridSpansY" value="4, 4, 4"></label>
+              <button class="rbtn sm accent" data-cmd="axis.generate">Aks dizisi oluştur</button>
+            </div>
+          </div>
+          <div class="rlabel">Aks dizisi</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rstack">
+              <button class="rbtn sm" data-cmd="axis.columnsAtNodes">Kesişimlere kolon yerleştir</button>
+              <button class="rbtn sm" data-cmd="axis.beamsOnAxes">Akslar boyunca kiriş çiz</button>
+              <button class="rbtn sm" data-cmd="axis.clear">Aksları temizle</button>
+            </div>
+          </div>
+          <div class="rlabel">Otomatik</div>
+        </div>
+      </section>
+
+      <!-- KATLAR -->
+      <section class="rpanel" data-tab="story">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big" data-cmd="story.add"><svg><use href="#i-storyadd"/></svg><span>Kat ekle</span></button>
+            <button class="rbtn big" data-cmd="story.duplicate"><svg><use href="#i-storycopy"/></svg><span>Katı çoğalt</span></button>
+            <button class="rbtn big" data-cmd="story.remove"><svg><use href="#i-storydel"/></svg><span>Kat sil</span></button>
+          </div>
+          <div class="rlabel">Kat işlemleri</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rstack">
+              <button class="rbtn sm" data-cmd="story.copyElementsUp">Elemanları üst kata kopyala</button>
+              <button class="rbtn sm" data-cmd="story.renumber">Kat adlarını yeniden numarala</button>
+              <label class="chk"><input type="checkbox" id="ghostStory" checked> Alt kat hayaleti</label>
+            </div>
+          </div>
+          <div class="rlabel">Kopyalama</div>
+        </div>
+      </section>
+
+      <!-- GÖRÜNÜM -->
+      <section class="rpanel" data-tab="view">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big vmode" data-vmode="plan"><svg><use href="#i-plan"/></svg><span>Plan</span></button>
+            <button class="rbtn big vmode" data-vmode="split"><svg><use href="#i-split"/></svg><span>Bölünmüş</span></button>
+            <button class="rbtn big vmode" data-vmode="3d"><svg><use href="#i-cube"/></svg><span>3B</span></button>
+            <button class="rbtn big" data-cmd="view.zoomExtents"><svg><use href="#i-zoom"/></svg><span>Tümünü sığdır</span></button>
+          </div>
+          <div class="rlabel">Görünüm</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rstack">
+              <label class="chk"><input type="checkbox" id="optGrid" checked> Izgara</label>
+              <label class="chk"><input type="checkbox" id="optAxes" checked> Akslar</label>
+              <label class="chk"><input type="checkbox" id="optDims" checked> Ölçüler</label>
+              <label class="chk"><input type="checkbox" id="optNames" checked> Eleman adları</label>
+            </div>
+          </div>
+          <div class="rlabel">Katmanlar</div>
+        </div>
+        <div class="rgroup">
+          <div class="rrow">
+            <div class="rstack">
+              <div class="btnline">
+                <button class="rbtn sm" data-cmd="v3.iso">İzometrik</button>
+                <button class="rbtn sm" data-cmd="v3.top">Üst</button>
+                <button class="rbtn sm" data-cmd="v3.front">Ön</button>
+                <button class="rbtn sm" data-cmd="v3.left">Sol</button>
+              </div>
+              <label class="chk"><input type="checkbox" id="opt3dWire"> Tel kafes</label>
+              <label class="chk"><input type="checkbox" id="opt3dAll" checked> Tüm katlar</label>
+              <button class="rbtn sm" data-cmd="v3.fit">3B sığdır</button>
+            </div>
+          </div>
+          <div class="rlabel">3B</div>
+        </div>
+      </section>
+
+      <!-- METRAJ -->
+      <section class="rpanel" data-tab="calc">
+        <div class="rgroup">
+          <div class="rrow">
+            <button class="rbtn big" data-cmd="calc.metraj"><svg><use href="#i-table"/></svg><span>Metrajı yenile</span></button>
+            <button class="rbtn big" data-cmd="calc.csv"><svg><use href="#i-png"/></svg><span>CSV indir</span></button>
+          </div>
+          <div class="rlabel">Metraj</div>
+        </div>
+        <div class="rgroup grow">
+          <div class="rrow">
+            <p class="warnbox">
+              <strong>Kapsam uyarısı.</strong> Bu program yalnızca <em>geometri modelleme</em> ve
+              <em>hacim/alan metrajı</em> yapar. Yapısal analiz, taşıma gücü, deprem hesabı, donatı
+              tasarımı <strong>yoktur</strong>. Buradan alınan hiçbir sayı proje hesabı yerine geçmez.
+            </p>
+          </div>
+          <div class="rlabel">Uyarı</div>
+        </div>
+      </section>
+    </div>
+  </nav>
+
+  <!-- --------------------------------------------------------------- ana -->
+  <div id="main">
+    <aside id="left">
+      <div class="panel flex">
+        <div class="phead">Proje Ağacı</div>
+        <div class="pbody" id="tree"></div>
+      </div>
+      <div class="panel">
+        <div class="phead">Kat Yöneticisi <button class="mini" data-cmd="story.add" title="Kat ekle">+</button></div>
+        <div class="pbody" id="storyList"></div>
+      </div>
+    </aside>
+
+    <div id="center">
+      <div id="viewtabs">
+        <button class="vtab active" data-vmode="plan">Kalıp Planı</button>
+        <button class="vtab" data-vmode="split">Bölünmüş</button>
+        <button class="vtab" data-vmode="3d">3B Model</button>
+        <div class="vspacer"></div>
+        <div class="hint" id="toolHint"></div>
+      </div>
+      <div id="viewport" data-mode="split">
+        <div class="pane pane2d"><canvas id="c2d" tabindex="0"></canvas></div>
+        <div class="splitter" id="splitter"></div>
+        <div class="pane pane3d"><canvas id="c3d"></canvas></div>
+      </div>
+      <div id="cmdbar">
+        <span class="cmdprompt">Komut:</span>
+        <input type="text" id="cmdInput" autocomplete="off" spellcheck="false"
+               placeholder="kolon · kiris · perde · doseme · aksx · aksy · sil · olcu · 500,300 · @200,0 · yardim">
+        <span class="cmdmsg" id="cmdMsg"></span>
+      </div>
+    </div>
+
+    <aside id="right">
+      <div class="panel flex">
+        <div class="phead">Özellikler</div>
+        <div class="pbody" id="props"></div>
+      </div>
+      <div class="panel">
+        <div class="phead">Metraj (geometrik)</div>
+        <div class="pbody" id="metraj"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- --------------------------------------------------------- durum çubuğu -->
+  <footer id="statusbar">
+    <span class="sitem" id="stCoord">X: 0.00 m &nbsp; Y: 0.00 m</span>
+    <span class="sitem" id="stSnap">—</span>
+    <span class="sgap"></span>
+    <span class="snaps">
+      <button class="stog" data-snap="axis" title="Aks kesişimi yakalama">AKS</button>
+      <button class="stog" data-snap="end" title="Uç nokta yakalama">UÇ</button>
+      <button class="stog" data-snap="mid" title="Orta nokta yakalama">ORTA</button>
+      <button class="stog" data-snap="perp" title="Dik izdüşüm yakalama">DİK</button>
+      <button class="stog" data-snap="grid" title="Izgara yakalama">IZGARA</button>
+      <button class="stog" data-snap="ortho" title="Dik mod (F8)">ORTO</button>
+    </span>
+    <span class="sgap"></span>
+    <span class="sitem" id="stStory">Kat: —</span>
+    <span class="sitem" id="stCount">0 eleman</span>
+    <span class="sitem" id="stZoom">%100</span>
+  </footer>
+</div>
+
+<!-- ------------------------------------------------------------- diyalog -->
+<div id="modal" hidden>
+  <div class="modal-card">
+    <div class="modal-head"><span id="modalTitle">Başlık</span><button class="mini" id="modalClose">✕</button></div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot" id="modalFoot"></div>
+  </div>
+</div>
+
+<script src="js/core.js"></script>
+<script src="js/geom.js"></script>
+<script src="js/view2d.js"></script>
+<script src="js/view3d.js"></script>
+<script src="js/tools2d.js"></script>
+<script src="js/platform.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

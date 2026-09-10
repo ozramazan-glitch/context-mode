@@ -1,0 +1,59 @@
+{
+  "name": "yapicad",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Betonarme kalıp planı editörü — aks sistemi, kolon/kiriş/perde/döşeme modelleme ve 3B önizleme. Yapısal analiz içermez.",
+  "author": "YapıCAD",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "start:linux-ci": "xvfb-run -a electron . --no-sandbox",
+    "serve": "node tools/serve.js",
+    "build:single": "node tools/build-single-file.js",
+    "dist:win": "electron-builder --win --x64",
+    "dist:win-portable": "electron-builder --win portable --x64",
+    "dist:linux": "electron-builder --linux AppImage --x64"
+  },
+  "build": {
+    "appId": "com.yapicad.editor",
+    "productName": "YapiCAD",
+    "directories": {
+      "output": "dist/release",
+      "buildResources": "assets"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "package.json"
+    ],
+    "win": {
+      "icon": "assets/icon.ico",
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "YapiCAD",
+      "artifactName": "YapiCAD-Kurulum-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "YapiCAD-Tasinabilir-${version}.${ext}"
+    },
+    "linux": {
+      "icon": "assets/icon.png",
+      "category": "Graphics",
+      "artifactName": "YapiCAD-${version}.${ext}"
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^26.15.3"
+  }
+}
