@@ -81,19 +81,37 @@ npm run serve              # http://localhost:8123
 
 ### Windows'ta (önerilen — tam pipeline çalışır)
 
-**Gerekli:** [Node.js](https://nodejs.org) 18 veya üstü. Başka hiçbir şey gerekmez;
-Visual Studio, Python, Wine hiçbiri lazım değil (projede yerel/native modül yok).
+**Tek ön koşul: [Node.js](https://nodejs.org) 18 veya üstü.** Visual Studio,
+Python, Wine gerekmez (projede yerel/native modül yok). Node.js kurulu değilse
+`npm` komutu tanınmaz ve hiçbir adım çalışmaz.
 
-Komut isteminde (`cmd` veya PowerShell), bu klasörün içinde:
+Kurulum:
 
 ```bat
-cd apps\yapicad
+winget install OpenJS.NodeJS.LTS
+```
+
+veya <https://nodejs.org> → **LTS** → `.msi`. **Kurulumdan sonra komut
+penceresini kapatıp yeniden açın** — `PATH` yalnızca yeni pencerelerde geçerli olur.
+
+**En kolay yol:** `tools\exe-olustur.bat` dosyasına çift tıklayın. Doğru klasörü
+kendi bulur, Node.js'i kontrol eder, bağımlılıkları kurar, paketler ve çıktı
+klasörünü açar.
+
+**Elle yapmak isterseniz** — `package.json`'un bulunduğu klasörde (`main.js`
+ile aynı yerde), `cmd` veya PowerShell'de:
+
+```bat
 npm install
 npm run dist:win
 ```
 
+> `cd yapicad` yazmanız gerekmez; zip'i açtığınızda zaten o klasörün
+> içindesinizdir. Emin olmak için `dir` çıktısında `package.json` görünmeli.
+
 İlk `npm install` Electron çalışma zamanını indirir (~100 MB), birkaç dakika
-sürer. `dist:win` sonunda `dist\release\` klasöründe:
+sürer; en az 1,5 GB boş disk alanı gerekir. `dist:win` sonunda `dist\release\`
+klasöründe:
 
 | Çıktı | Ne işe yarar |
 |---|---|
