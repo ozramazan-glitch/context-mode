@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rcsolve-ref"
+version = "0.0.1"
+description = "Betonarme tasarım referans uygulaması — Hat A (oracle). Reference implementation for reinforced concrete design — track A."
+requires-python = ">=3.11"
+dependencies = ["numpy>=1.26", "scipy>=1.11"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "jsonschema>=4.20", "types-jsonschema", "ruff>=0.6", "mypy>=1.11"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+# Kasıtlı xfail'lerin sessizce "geçti" sayılmasını engelle: strict xfail
+# beklenmedik başarıda paketi kırar, böylece boşluk görünür kalır.
+xfail_strict = true
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "B", "SIM", "RUF"]
+# RUF001/002/003 "belirsiz unicode karakter" uyarıları, İngilizce kod tabanlarında
+# homoglif saldırısı yakalamak için vardır. Belgelendirmesi Türkçe olan bir kod
+# tabanında her 'ı', 'ş', 'ğ' ve her '·' bir uyarı üretir — 608 adet gürültü.
+# Türkçe yazmak bir kusur değildir; kural kapatılır.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.ruff.lint.per-file-ignores]
+# Test adları mühendislik sembolü taşır: "..._scales_with_L_to_the_fourth".
+# L'yi küçültmek adı anlamsızlaştırır.
+"tests/*" = ["N802"]
+# Kıyas fonksiyonları yönetmelik/ders kitabı sembollerini birebir kullanır.
+"src/rcsolve_ref/benchmarks/*" = ["N803"]
+
+[tool.ruff.lint.pep8-naming]
+# Mühendislik sembolleri büyük harflidir ve öyle kalmalıdır: EI eğilme
+# rijitliğidir, 'ei' değil. Bunları PEP 8 uğruna küçültmek kodu okunmaz yapar —
+# yönetmelikteki sembolle kodtaki ad birebir eşleşmeli. Liste kasten kısa:
+# her yeni sembol bilinçli bir karar olsun.
+ignore-names = [
+    "EI", "EA", "GJ", "GA", "Es", "Ec", "Ecm", "E", "G", "I", "Iy", "Iz", "J", "A",
+    "P", "N", "M", "V", "T", "H", "L", "W", "K",
+    "fcd", "fctd", "fctk", "fctm", "fyd", "fck", "fyk",
+]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src", "tests"]

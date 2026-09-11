@@ -1,0 +1,46 @@
+# rc-cad sürekli entegrasyon şablonu.
+#
+# Bu dosya BİLEREK .github/workflows/ altında DEĞİL: burası context-mode deposu
+# ve bu iş akışı oraya ait değil; konsaydı context-mode'un CI'ında koşar ve
+# alakasız bir hata üretirdi. rc-cad kendi deposuna taşındığında bu dosya
+# .github/workflows/ altına gider.
+#
+# Deliberately NOT under .github/workflows/: this is the context-mode repository
+# and this workflow does not belong to it. It moves there when rc-cad is
+# extracted into its own repository.
+
+name: rc-cad checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  reference-implementation:
+    name: Hat A — Python referans
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: rcsolve-ref
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -e '.[dev]'
+      - name: Doğrulama paketi (xfail_strict açık)
+        run: pytest -q
+      - name: Biçim ve tip denetimi
+        run: |
+          ruff check .
+          python -m mypy
+
+  # Hat B geldiğinde eklenecek iş / to be added when track B lands:
+  #
+  #   production-core:   Rust çekirdeği derle ve test et
+  #   track-parity:      her kıyas dosyasını iki hattan geçir, sonuçları karşılaştır
+  #                      (yerdeğiştirme 1e-8, iç kuvvet 1e-6, periyot 1e-6 bağıl)
+  #
+  # Parite kapısı olmadan iki hatlı geliştirmenin hiçbir değeri yoktur:
+  # karşılaştırılmayan iki uygulama, iki ayrı hatadır.
