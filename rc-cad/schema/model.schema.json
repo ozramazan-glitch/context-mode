@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://rc-cad.invalid/schema/model/1.0",
+  "title": "rc-cad structural model",
+  "description": "İki hattın ortak sözleşmesi (ADR-0001). Python ve Rust tipleri bu dosyadan ÜRETİLİR, elle yazılmaz: iki yerde elle tutulan bir şema sessizce ayrışır. Yönetmelik alanı YOKTUR — yönetmelik bir analiz parametresidir, model özelliği değil (ADR-0003). Birimler dosyada açıkça yazılır ve yükleyicide SI'ya çevrilir (ADR-0002).",
+  "type": "object",
+  "required": ["schemaVersion", "units", "nodes", "members"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "description": "Uyumsuz değişiklik büyük sürümü artırır ve göç yazılmasını zorunlu kılar.",
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+$"
+    },
+    "name": { "type": "string" },
+    "units": {
+      "description": "Dosyadaki sayıların birimi. Çekirdek SI'dır; dönüşüm yükleyicide yapılır. Birim belirtmek ZORUNLUDUR: varsayılan birim, sessiz 1000 kat hatanın en yaygın kaynağıdır.",
+      "type": "object",
+      "required": ["length", "force"],
+      "additionalProperties": false,
+      "properties": {
+        "length": { "enum": ["m", "mm", "cm"] },
+        "force": { "enum": ["N", "kN", "MN", "kgf", "tf"] },
+        "stress": { "enum": ["Pa", "kPa", "MPa", "GPa"] },
+        "angle": { "enum": ["rad", "deg"] }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "x", "y", "z"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" }
+        }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "required": ["id", "type", "width", "height"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "type": { "const": "rectangular" },
+              "width": { "$ref": "#/$defs/positive" },
+              "height": { "$ref": "#/$defs/positive" }
+            }
+          },
+          {
+            "type": "object",
+            "required": ["id", "type", "webWidth", "height", "flangeWidth", "flangeThickness"],
+            "additionalProperties": false,
+            "properties": {
+              "id": { "$ref": "#/$defs/id" },
+              "type": { "const": "tee" },
+              "webWidth": { "$ref": "#/$defs/positive" },
+              "height": { "$ref": "#/$defs/positive" },
+              "flangeWidth": { "$ref": "#/$defs/positive" },
+              "flangeThickness": { "$ref": "#/$defs/positive" }
+            }
+          }
+        ]
+      }
+    },
+    "members": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "nodeI", "nodeJ", "section", "concrete", "rebar"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "nodeI": { "$ref": "#/$defs/id" },
+          "nodeJ": { "$ref": "#/$defs/id" },
+          "section": { "$ref": "#/$defs/id" },
+          "concrete": {
+            "description": "Beton sınıfı adı. C##/## gösterimi TS 500 ve EN 206'da ortaktır; türetilmiş değerler yönetmelik sağlayıcısından gelir, burada saklanmaz.",
+            "type": "string",
+            "pattern": "^C\\d{2}/\\d{2}$"
+          },
+          "rebar": { "enum": ["S220", "B420C", "B500C"] },
+          "rotation": { "type": "number", "default": 0 },
+          "releaseI": { "$ref": "#/$defs/restraint" },
+          "releaseJ": { "$ref": "#/$defs/restraint" }
+        }
+      }
+    },
+    "supports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["node", "restraint"],
+        "additionalProperties": false,
+        "properties": {
+          "node": { "$ref": "#/$defs/id" },
+          "restraint": { "$ref": "#/$defs/restraint" }
+        }
+      }
+    },
+    "loadCases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "name": { "type": "string" },
+          "kind": {
+            "description": "Fiziksel tür. Hangi katsayıyla çarpılacağı yönetmeliğe aittir ve modelde yer almaz.",
+            "enum": ["dead", "live", "snow", "wind", "seismic", "temperature"]
+          }
+        }
+      }
+    },
+    "nodalLoads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["case", "node"],
+        "additionalProperties": false,
+        "properties": {
+          "case": { "$ref": "#/$defs/id" },
+          "node": { "$ref": "#/$defs/id" },
+          "fx": { "type": "number" }, "fy": { "type": "number" }, "fz": { "type": "number" },
+          "mx": { "type": "number" }, "my": { "type": "number" }, "mz": { "type": "number" }
+        }
+      }
+    },
+    "memberLoads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["case", "member"],
+        "additionalProperties": false,
+        "properties": {
+          "case": { "$ref": "#/$defs/id" },
+          "member": { "$ref": "#/$defs/id" },
+          "wx": { "type": "number" }, "wy": { "type": "number" }, "wz": { "type": "number" }
+        }
+      }
+    },
+    "combinations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "factors"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "$ref": "#/$defs/id" },
+          "name": { "type": "string" },
+          "kind": { "enum": ["ultimate", "serviceability"] },
+          "factors": {
+            "type": "object",
+            "minProperties": 1,
+            "additionalProperties": { "type": "number" }
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "positive": { "type": "number", "exclusiveMinimum": 0 },
+    "restraint": {
+      "description": "Altı serbestlik derecesi. true = tutulu (mesnette) veya serbest bırakılmış (uç mafsalında).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "ux": { "type": "boolean" }, "uy": { "type": "boolean" }, "uz": { "type": "boolean" },
+        "rx": { "type": "boolean" }, "ry": { "type": "boolean" }, "rz": { "type": "boolean" }
+      }
+    }
+  }
+}

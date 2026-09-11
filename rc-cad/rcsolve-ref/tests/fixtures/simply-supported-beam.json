@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0",
+  "name": "6 m basit mesnetli kiriş — Faz 1 hedef modeli",
+  "units": { "length": "m", "force": "kN", "stress": "MPa" },
+  "nodes": [
+    { "id": "N1", "x": 0.0, "y": 0.0, "z": 0.0 },
+    { "id": "N2", "x": 6.0, "y": 0.0, "z": 0.0 }
+  ],
+  "sections": [
+    { "id": "R250x500", "type": "rectangular", "width": 0.25, "height": 0.50 }
+  ],
+  "members": [
+    { "id": "B1", "nodeI": "N1", "nodeJ": "N2", "section": "R250x500",
+      "concrete": "C30/37", "rebar": "B420C" }
+  ],
+  "supports": [
+    { "node": "N1", "restraint": { "ux": true, "uy": true, "uz": true } },
+    { "node": "N2", "restraint": { "uz": true } }
+  ],
+  "loadCases": [
+    { "id": "G", "name": "ölü yük", "kind": "dead" },
+    { "id": "Q", "name": "hareketli yük", "kind": "live" }
+  ],
+  "memberLoads": [
+    { "case": "G", "member": "B1", "wz": -20.0 },
+    { "case": "Q", "member": "B1", "wz": -12.0 }
+  ],
+  "combinations": [
+    { "id": "C1", "name": "1.4G + 1.6Q", "kind": "ultimate",
+      "factors": { "G": 1.4, "Q": 1.6 } },
+    { "id": "C2", "name": "G + Q", "kind": "serviceability",
+      "factors": { "G": 1.0, "Q": 1.0 } }
+  ]
+}
