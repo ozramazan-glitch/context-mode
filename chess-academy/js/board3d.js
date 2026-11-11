@@ -72,6 +72,23 @@
     return GEO;
   }
 
+  // Bauhaus taşları: küp, küre ve çubuklardan (ölçüler kare = 1 birime göre)
+  var GEO_BH = null;
+  function buildBauhaus() {
+    if (GEO_BH) return GEO_BH;
+    var T = root.THREE;
+    var cube = function (s) { return new T.BoxGeometry(s, s, s); };
+    GEO_BH = {
+      p: [[cube(0.34), 0, 0.17, 0]],
+      r: [[new T.BoxGeometry(0.52, 0.56, 0.52), 0, 0.28, 0]],
+      n: [[cube(0.24), -0.12, 0.12, 0], [cube(0.24), -0.12, 0.36, 0], [cube(0.24), -0.12, 0.6, 0], [cube(0.24), 0.12, 0.12, 0]],
+      b: [[new T.BoxGeometry(0.42, 0.1, 0.42), 0, 0.05, 0], [new T.BoxGeometry(0.13, 0.66, 0.3), 0, 0.42, 0, 1, 1, 1, 0, false, Math.PI / 4], [new T.BoxGeometry(0.13, 0.66, 0.3), 0, 0.42, 0, 1, 1, 1, 0, false, -Math.PI / 4]],
+      q: [[new T.BoxGeometry(0.42, 0.34, 0.42), 0, 0.17, 0], [new T.SphereGeometry(0.21, 32, 24), 0, 0.55, 0]],
+      k: [[new T.BoxGeometry(0.44, 0.4, 0.44), 0, 0.2, 0], [cube(0.27), 0, 0.6, 0, 1, 1, 1, 0, false, Math.PI / 4]]
+    };
+    return GEO_BH;
+  }
+
   function starGeometry() {
     var T = root.THREE, s = new T.Shape();
     for (var i = 0; i < 10; i++) {
@@ -204,7 +221,8 @@
   };
 
   Board3D.prototype.makePiece = function (ch) {
-    var T = root.THREE, geo = buildGeometries();
+    var T = root.THREE, bh = document.documentElement.getAttribute('data-skin') === 'bauhaus';
+    var geo = bh ? buildBauhaus() : buildGeometries();
     var color = E.colorOf(ch), parts = geo[ch.toLowerCase()];
     var g = new T.Group();
     parts.forEach(function (p) {
@@ -216,6 +234,7 @@
         if (p[4] !== undefined) mesh.scale.set(p[4], p[5], p[6]);
         if (p[7]) mesh.rotation.y = p[7];
         if (p[8]) mesh.rotation.y = color === 'w' ? Math.PI * 0.75 : -Math.PI * 0.25; // at başı çapraz olarak rakibe dönük
+        if (p[9]) mesh.rotation.z = p[9];
       }
       mesh.castShadow = true;
       mesh.receiveShadow = true;

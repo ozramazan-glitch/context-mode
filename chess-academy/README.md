@@ -25,7 +25,7 @@ node chess-academy/tools/build-single.mjs dist/satranc-akademisi.html
 | **Öğrenme Yolu** (birinci arayüz) | 8 bölüm, 37 ders, 55 alıştırma. Bölümler en basitten en deneyimli oyuncu profiline sıralıdır: Sıfırdan Başlayan → Kuralları Öğrenen → İlk Oyunlarını Oynayan → Hobi Oyuncusu → Gelişen Kulüp Oyuncusu → Turnuva Adayı → Deneyimli Oyuncu → Usta Adayı. Bir bölümün alıştırmalarının en az %75’i çözülünce sıradaki bölüm açılır. |
 | **Özel Hamleler Atölyesi** (ikinci arayüz) | Piyonun çift adımı, rok, geçerken alma ve terfi: kuralların tam listesi, adım adım gösterim ve 17 alıştırma. **Rok Laboratuvarı**’nda taşları serbestçe yerleştirip rok koşullarının (6 koşul) canlı olarak nasıl değiştiğini görürsünüz. |
 | **2B / 3B görünüm** | Üst menüdeki düğmeyle tüm tahtalar 2B ile 3B arasında geçer. 3B tahta sürüklenerek döndürülür, tekerlek veya iki parmakla yakınlaştırılır; hamleler 3B’de de tıklanarak yapılır. |
-| **Temalar ve hareket** | Ayarlar'dan seçilen 5 tema: Satranç Kitabı (varsayılan; kayan siyah menü kapsülü, sayfa geçişinde çapraz akan dama kareleri), Gece Turnuvası (koyu cam paneller, yaylanan parlak menü, odak geçişi), Mermer ve Pirinç (uzayıp toplanan pirinç çizgi, kartların sırayla yükselmesi), Satranç Saati (basılan tuş sekmeler, LCD göstergeler, kaydırma geçişi) ve ilk tema Kulüp Salonu. Telefonda menü, animasyonlu bir çekmeceye dönüşür. Sistemde “hareketi azalt” açıksa animasyonlar kapanır. |
+| **Temalar ve hareket** | Varsayılan tema **Bauhaus Satranç**: taşlar Josef Hartwig'in 1920'lerdeki Bauhaus takımından esinlenen geometrik biçimlerdir (kale küp, fil X, at L, vezir küre, şah döndürülmüş küp); biçim hareketi anlatır. GSAP ile animasyonlar: üç renkli perde sayfa geçişi, renk ve biçim değiştirerek yaylanan menü göstergesi, zıplayan menü harfleri, imleci izleyen kartlar, sayan sayaçlar, doğru çözümde geometrik konfeti. 3B görünümde de taşlar küp ve kürelerden oluşur. Ayarlar'dan seçilebilen diğer temalar: Satranç Kitabı ( kayan siyah menü kapsülü, sayfa geçişinde çapraz akan dama kareleri), Gece Turnuvası (koyu cam paneller, yaylanan parlak menü, odak geçişi), Mermer ve Pirinç (uzayıp toplanan pirinç çizgi, kartların sırayla yükselmesi), Satranç Saati (basılan tuş sekmeler, LCD göstergeler, kaydırma geçişi) ve ilk tema Kulüp Salonu. Telefonda menü, animasyonlu bir çekmeceye dönüşür. Sistemde “hareketi azalt” açıksa animasyonlar kapanır. |
 | **Gelişim Paneli** | Seviye ve unvan, XP çubuğu, tahmini bulmaca puanı ve grafiği, oyuncu profili yolculuğu (8 basamak), 7 beceri alanı için radar grafiği ve tablo, son 14 günün XP grafiği, günlük seri, 17 rozet, etkinlik geçmişi, öneriler, istatistikler, yedekleme/geri yükleme/sıfırlama. |
 | **Seviye belirleme sınavı** | Satranç bilenler için: her bölümden bir soru; ilk hatada biter ve geçilen bölümler açılır. |
 | **Serbest oyun** | Bilgisayara karşı üç zorluk seviyesinde, beyaz veya siyahla tam oyun. |
@@ -57,6 +57,7 @@ node chess-academy/tests/run-all.mjs
 
 ## Sınırlamalar
 
+- **Animasyonlar** GSAP (3.12.5) kitaplığını internetten indirir; indirilemezse daha sade, tarayıcının kendi animasyonlarıyla çalışır.
 - **3B görünüm** ilk açılışta three.js (r128) grafik kitaplığını internetten (cdnjs, olmazsa jsDelivr) indirir. İnternet
   yoksa veya cihaz WebGL desteklemiyorsa uygulama bunu bildirir ve 2B görünüme döner.
 - **İlerleme** tarayıcının yerel depolamasında (localStorage) tutulur; tarayıcı verisi silinirse kaybolur. Gelişim
@@ -82,7 +83,7 @@ chess-academy/
 ├── js/progress.js      XP, seviye, puan, rozetler, kayıt
 ├── js/board.js         2B tahta ve ortak etkileşim
 ├── js/board3d.js       3B tahta (three.js)
-├── js/motion.js        Temalar, menü animasyonu, sayfa geçişleri
+├── js/motion.js        Temalar, menü animasyonu, sayfa geçişleri, kutlama (GSAP)
 ├── js/trainer.js       Ders oynatıcı ve alıştırma kuralları
 ├── js/views.js         Ekranlar
 ├── js/app.js           Yönlendirme, ayarlar

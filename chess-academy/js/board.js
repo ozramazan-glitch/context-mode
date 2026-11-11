@@ -8,6 +8,31 @@
 
   var GLYPH = { k: '♚', q: '♛', r: '♜', b: '♝', n: '♞', p: '♟' };
   function glyph(p) { return GLYPH[p.toLowerCase()] + '︎'; }
+
+  // Bauhaus taşları (Josef Hartwig'in takımından esinlenerek): biçim hareketi anlatır.
+  var BH = {
+    p: '<rect class="f" x="34" y="46" width="32" height="32"/>',
+    r: '<rect class="f" x="23" y="22" width="54" height="56"/>',
+    n: '<path class="f" d="M24 14 H50 V52 H78 V80 H24 Z"/><path class="sep" d="M24 33 H50 M24 52 H50 V80"/>',
+    b: '<rect class="f" x="28" y="70" width="44" height="12"/><path class="f" d="M24 30 L36 18 L78 60 L66 72 Z"/><path class="f" d="M64 18 L76 30 L34 72 L22 60 Z"/>',
+    q: '<rect class="f" x="29" y="56" width="42" height="26"/><circle class="f" cx="50" cy="35" r="19"/>',
+    k: '<rect class="f" x="27" y="52" width="46" height="30"/><path class="f" d="M50 12 L71 33 L50 54 L29 33 Z"/>'
+  };
+  function bauhausSVG(p) {
+    var c = p === p.toUpperCase() ? 'w' : 'b';
+    return '<svg class="bh ' + c + '" viewBox="0 0 100 100" aria-hidden="true">' + BH[p.toLowerCase()] + '</svg>';
+  }
+  function isBauhaus() { return document.documentElement.getAttribute('data-skin') === 'bauhaus'; }
+  // Bir taşı bir öğenin içine çiz (temaya göre SVG ya da yazı karakteri)
+  function drawPiece(el, p) {
+    var bh = !!p && isBauhaus();
+    var key = p ? (bh ? 'bh' + p : p) : '';
+    if (el.dataset.k === key) return;
+    el.dataset.k = key;
+    if (!p) el.textContent = '';
+    else if (bh) el.innerHTML = bauhausSVG(p);
+    else el.textContent = glyph(p);
+  }
   var reduceMotion = false;
   try { reduceMotion = root.matchMedia && root.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { /* yok */ }
 
@@ -139,8 +164,7 @@
     for (var s = 0; s < 64; s++) {
       var d = this.sq[s], p = st ? st.board[s] : null;
       var pc = d.firstChild;
-      var txt = p ? glyph(p) : '';
-      if (pc.textContent !== txt) pc.textContent = txt;
+      drawPiece(pc, p);
       pc.className = 'pc' + (p ? (E.colorOf(p) === 'w' ? ' w' : ' b') : '');
       var cls = 'sq ' + (E.isLight(s) ? 'light' : 'dark');
       if (last[s]) cls += ' last';
@@ -416,7 +440,8 @@
       if (!m) return;
       var b = el('button', 'promo-btn');
       b.type = 'button';
-      var g = el('span', 'pc ' + color, glyph(t));
+      var g = el('span', 'pc ' + color);
+      drawPiece(g, color === 'w' ? t.toUpperCase() : t);
       b.appendChild(g);
       b.appendChild(el('span', 'promo-name', E.TR_NAME[t]));
       b.addEventListener('click', function () { self.emitMove(m); });
@@ -443,4 +468,6 @@
   root.BoardView = BoardView;
   root.Board2D = Board2D;
   root.pieceGlyph = glyph;
+  root.drawPiece = drawPiece;
+  root.bauhausSVG = bauhausSVG;
 })(typeof window !== 'undefined' ? window : globalThis);

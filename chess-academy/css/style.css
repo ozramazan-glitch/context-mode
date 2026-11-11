@@ -166,7 +166,7 @@ button { font: inherit; color: inherit; }
 
 /* ---- Sayfa ---- */
 .main {
-  max-width: 1200px; margin: 0 auto; outline: none;
+  max-width: 1200px; margin: 0 auto; outline: none; overflow-x: clip;
   padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 .screen { display: grid; gap: 28px; }
@@ -736,6 +736,184 @@ textarea { width: 100%; font: 400 .8rem/1.4 var(--font-mono); resize: vertical; 
 .skin-opt .sw span { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .15); }
 .skin-opt:has(input:checked) { border-color: var(--felt); box-shadow: inset 0 0 0 1px var(--felt); }
 
+/* =====================================================================
+   Bauhaus Satranç (varsayılan tema)
+   Josef Hartwig'in 1920'lerdeki Bauhaus satranç takımından esinlenir:
+   taşların biçimi hareketlerini anlatır. Düz renkler (kırmızı, sarı,
+   mavi, siyah), kalın siyah çizgiler, sert gölgeler, geometrik hareket.
+   ===================================================================== */
+:root[data-skin="bauhaus"] {
+  --bg: #f3f2ee; --bg-img: none; --surface: #ffffff; --surface-2: #e9e7e1; --ink: #111111; --ink-2: #4d4b47; --line: #d6d3cb;
+  --felt: #111111; --felt-2: #1d4fa3; --on-felt: #ffffff; --brass: #d9241a; --brass-soft: #fbe7a3;
+  --good: #0f8a4a; --good-soft: #d6efe1; --bad: #d9241a; --bad-soft: #fbd9d6; --info: #1d4fa3; --info-soft: #dbe4f5;
+  --sq-light: #f4efe2; --sq-dark: #cdb68a; --frame-3d: #111111; --frame-3d-ink: #f4efe2;
+  --piece-w: #fbf8f0; --piece-w-edge: #111111; --piece-b: #141414; --piece-b-edge: #141414; --piece-3d-w: #ead5ad; --piece-3d-b: #161616;
+  --mark: rgba(29, 79, 163, .42); --sel: rgba(246, 192, 24, .6); --last: rgba(246, 192, 24, .36);
+  --shadow: none; --radius: 0px;
+  --font-display: "Unbounded", "Arial Black", system-ui, sans-serif; --font-body: "DM Sans", "Inter", system-ui, sans-serif; --font-mono: "DM Mono", ui-monospace, Menlo, monospace;
+  --display-stretch: 100%; --display-weight: 700;
+  --bar: #f3f2ee; --bar-solid: #f3f2ee; --bar-ink: #111111; --bar-line: #111111; --tab-ink: #111111; --ind: #d9241a; --ind-ink: #ffffff;
+  --brand-mark: #d9241a; --seg-bg: #e9e7e1; --seg-on: #111111; --seg-on-ink: #ffffff; --wipe-a: #f3f2ee; --wipe-b: #111111; --glass: none;
+  --red: #d9241a; --yellow: #f6c018; --blue: #1d4fa3; --hard: #111111; --stroke: #111111;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root[data-skin="bauhaus"]:not([data-theme="light"]) {
+    --bg: #131313; --surface: #1c1c1c; --surface-2: #262626; --ink: #f3f2ee; --ink-2: #aaa7a0; --line: #333230;
+    --felt: #f3f2ee; --felt-2: #6f9be8; --on-felt: #111111; --brass: #ff4b3e; --brass-soft: #3a3112;
+    --good: #43c47e; --good-soft: #13291c; --bad: #ff6a5e; --bad-soft: #3a1714; --info: #6f9be8; --info-soft: #17233a;
+    --sq-light: #e7dfcb; --sq-dark: #a88d5c; --frame-3d: #000000; --frame-3d-ink: #e7dfcb;
+    --mark: rgba(111, 155, 232, .5); --sel: rgba(246, 192, 24, .55); --last: rgba(246, 192, 24, .3);
+    --bar: #131313; --bar-solid: #131313; --bar-ink: #f3f2ee; --bar-line: #f3f2ee; --tab-ink: #f3f2ee; --ind: #ff4b3e; --ind-ink: #111111;
+    --brand-mark: #ff4b3e; --seg-bg: #262626; --seg-on: #f3f2ee; --seg-on-ink: #111111;
+    --red: #ff4b3e; --blue: #6f9be8; --hard: #f6c018; --stroke: #f3f2ee;
+    color-scheme: dark;
+  }
+}
+:root[data-skin="bauhaus"][data-theme="dark"] {
+  --bg: #131313; --surface: #1c1c1c; --surface-2: #262626; --ink: #f3f2ee; --ink-2: #aaa7a0; --line: #333230;
+  --felt: #f3f2ee; --felt-2: #6f9be8; --on-felt: #111111; --brass: #ff4b3e; --brass-soft: #3a3112;
+  --good: #43c47e; --good-soft: #13291c; --bad: #ff6a5e; --bad-soft: #3a1714; --info: #6f9be8; --info-soft: #17233a;
+  --sq-light: #e7dfcb; --sq-dark: #a88d5c; --frame-3d: #000000; --frame-3d-ink: #e7dfcb;
+  --mark: rgba(111, 155, 232, .5); --sel: rgba(246, 192, 24, .55); --last: rgba(246, 192, 24, .3);
+  --bar: #131313; --bar-solid: #131313; --bar-ink: #f3f2ee; --bar-line: #f3f2ee; --tab-ink: #f3f2ee; --ind: #ff4b3e; --ind-ink: #111111;
+  --brand-mark: #ff4b3e; --seg-bg: #262626; --seg-on: #f3f2ee; --seg-on-ink: #111111;
+  --red: #ff4b3e; --blue: #6f9be8; --hard: #f6c018; --stroke: #f3f2ee;
+  color-scheme: dark;
+}
+:root:not([data-skin="bauhaus"]) .only-bauhaus { display: none !important; }
+
+/* Tipografi ve çerçeve */
+:root[data-skin="bauhaus"] h1 { letter-spacing: -.02em; line-height: 1.04; font-weight: 800; }
+:root[data-skin="bauhaus"] h2, :root[data-skin="bauhaus"] h3 { letter-spacing: -.01em; }
+:root[data-skin="bauhaus"] .topbar { border-bottom-width: 3px; }
+:root[data-skin="bauhaus"] .brand-name { font-size: 1rem; letter-spacing: -.01em; }
+:root[data-skin="bauhaus"] .brand-mark { font-size: 0; width: 30px; height: 30px; position: relative; }
+:root[data-skin="bauhaus"] .brand-mark::before { content: ""; position: absolute; left: 0; bottom: 0; width: 18px; height: 18px; background: var(--red); border-radius: 50%; }
+:root[data-skin="bauhaus"] .brand-mark::after { content: ""; position: absolute; right: 0; top: 0; width: 14px; height: 14px; background: var(--blue); box-shadow: -8px 18px 0 -3px var(--yellow); }
+:root[data-skin="bauhaus"] .eyebrow { color: var(--red); }
+:root[data-skin="bauhaus"] .eyebrow::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 8px; background: var(--red); border-radius: 50%; vertical-align: -1px; }
+
+/* Menü: renk ve biçim değiştiren gösterge (GSAP ile hareket eder) */
+:root[data-skin="bauhaus"] .nav { gap: 4px; }
+:root[data-skin="bauhaus"] .nav a { border-radius: 0; font-weight: 700; letter-spacing: .01em; }
+:root[data-skin="bauhaus"] .nav a .ch { display: inline-block; }
+:root[data-skin="bauhaus"] .nav-ind { border-radius: 999px; border: 2px solid var(--stroke); }
+:root[data-skin="bauhaus"] .nav a[aria-current="page"] { color: var(--ind-ink); }
+:root[data-skin="bauhaus"] .drawer { border-bottom-width: 3px; }
+:root[data-skin="bauhaus"] .drawer a { border-radius: 0; font-family: var(--font-display); font-size: 1.15rem; border: 2px solid transparent; }
+:root[data-skin="bauhaus"] .drawer a[aria-current="page"] { background: var(--red); color: #fff; border-color: var(--stroke); }
+
+/* Bileşenler: kalın çizgi, sert gölge */
+:root[data-skin="bauhaus"] .btn { border-radius: 0; border: 2px solid var(--stroke); box-shadow: 4px 4px 0 var(--hard); font-weight: 700; transition: transform .15s, box-shadow .15s, background-color .2s; }
+:root[data-skin="bauhaus"] .btn:hover:not(:disabled) { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--hard); }
+:root[data-skin="bauhaus"] .btn:active:not(:disabled) { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--hard); }
+:root[data-skin="bauhaus"] .btn.secondary { background: var(--yellow); color: #111; }
+:root[data-skin="bauhaus"] .btn.ghost { background: var(--surface); }
+:root[data-skin="bauhaus"] .btn.danger { background: var(--red); color: #fff; }
+:root[data-skin="bauhaus"] .card-link, :root[data-skin="bauhaus"] .panel, :root[data-skin="bauhaus"] .kpi, :root[data-skin="bauhaus"] .trainer-panel,
+:root[data-skin="bauhaus"] .station, :root[data-skin="bauhaus"] .level-block, :root[data-skin="bauhaus"] .rules-box, :root[data-skin="bauhaus"] .cond-box,
+:root[data-skin="bauhaus"] .glossary-list, :root[data-skin="bauhaus"] .modal-card, :root[data-skin="bauhaus"] .settings-panel {
+  border: 2px solid var(--stroke); border-radius: 0; box-shadow: 6px 6px 0 var(--hard);
+}
+:root[data-skin="bauhaus"] .ex-tile, :root[data-skin="bauhaus"] .lesson-item, :root[data-skin="bauhaus"] .atab, :root[data-skin="bauhaus"] .option,
+:root[data-skin="bauhaus"] .ladder li, :root[data-skin="bauhaus"] .badge, :root[data-skin="bauhaus"] .skin-opt, :root[data-skin="bauhaus"] .tool {
+  border: 2px solid var(--stroke); border-radius: 0;
+}
+:root[data-skin="bauhaus"] .card-link, :root[data-skin="bauhaus"] .ex-tile, :root[data-skin="bauhaus"] .lesson-item, :root[data-skin="bauhaus"] .atab { transform-style: preserve-3d; will-change: transform; }
+:root[data-skin="bauhaus"] .card-link:hover, :root[data-skin="bauhaus"] .ex-tile:hover:not(:disabled), :root[data-skin="bauhaus"] .lesson-item:hover { box-shadow: 8px 8px 0 var(--hard); }
+:root[data-skin="bauhaus"] .card-link .ic { color: var(--red); width: 30px; height: 30px; }
+:root[data-skin="bauhaus"] .cards .card-link:nth-child(2) .ic { color: var(--blue); }
+:root[data-skin="bauhaus"] .cards .card-link:nth-child(3) .ic { color: #c99a00; }
+:root[data-skin="bauhaus"] .card-link .card-meta { color: var(--red); }
+:root[data-skin="bauhaus"] .station-no { border-radius: 0; border: 2px solid var(--stroke); background: var(--surface); }
+:root[data-skin="bauhaus"] .station:nth-child(3n+1) .station-no { border-radius: 50%; }
+:root[data-skin="bauhaus"] .station.open .station-no { background: var(--red); color: #fff; }
+:root[data-skin="bauhaus"] .station.done .station-no { background: var(--blue); color: #fff; }
+:root[data-skin="bauhaus"] .bar { border-radius: 0; border: 2px solid var(--stroke); height: 12px; background: var(--surface); }
+:root[data-skin="bauhaus"] .bar span { border-radius: 0; background: repeating-linear-gradient(90deg, var(--red) 0 16px, var(--yellow) 16px 32px, var(--blue) 32px 48px); }
+:root[data-skin="bauhaus"] .bar.thin { height: 6px; border-width: 1px; }
+:root[data-skin="bauhaus"] .kpi-value { font-size: 2.3rem; }
+:root[data-skin="bauhaus"] .kpis .kpi:nth-child(1) { border-top: 10px solid var(--red); }
+:root[data-skin="bauhaus"] .kpis .kpi:nth-child(2) { border-top: 10px solid var(--yellow); }
+:root[data-skin="bauhaus"] .kpis .kpi:nth-child(3) { border-top: 10px solid var(--blue); }
+:root[data-skin="bauhaus"] .kpis .kpi:nth-child(4) { border-top: 10px solid var(--stroke); }
+:root[data-skin="bauhaus"] .atelier-head { background: var(--blue); color: #fff; border: 2px solid var(--stroke); border-radius: 0; box-shadow: 8px 8px 0 var(--hard); position: relative; overflow: hidden; }
+:root[data-skin="bauhaus"] .atelier-head .eyebrow { color: var(--yellow); }
+:root[data-skin="bauhaus"] .atelier-head .eyebrow::before { background: var(--yellow); }
+:root[data-skin="bauhaus"] .atelier-head::after { content: ""; position: absolute; right: -60px; top: -60px; width: 220px; height: 220px; border-radius: 50%; background: var(--red); border: 2px solid var(--stroke); }
+:root[data-skin="bauhaus"] .atelier-head > div { position: relative; z-index: 1; }
+:root[data-skin="bauhaus"] .atab.on { background: var(--yellow); color: #111; box-shadow: 4px 4px 0 var(--hard); }
+:root[data-skin="bauhaus"] .atab.on .atab-meta { color: #333; }
+:root[data-skin="bauhaus"] .feedback.good { border-left: 8px solid var(--good); border-radius: 0; }
+:root[data-skin="bauhaus"] .feedback.bad { border-left: 8px solid var(--red); border-radius: 0; }
+:root[data-skin="bauhaus"] .feedback.info { border-left: 8px solid var(--blue); border-radius: 0; }
+:root[data-skin="bauhaus"] .result { border: 2px solid var(--stroke); border-radius: 0; background: var(--yellow); color: #111; box-shadow: 8px 8px 0 var(--hard); }
+:root[data-skin="bauhaus"] .result .result-meta, :root[data-skin="bauhaus"] .result .small { color: #333; }
+:root[data-skin="bauhaus"] .result .stars .on { fill: var(--red); stroke: #111; }
+:root[data-skin="bauhaus"] .result .btn.ghost { background: #fff; color: #111; }
+:root[data-skin="bauhaus"] .chip { border-radius: 0; background: var(--ink); color: var(--bg); }
+:root[data-skin="bauhaus"] .seg { border-radius: 0; border: 2px solid var(--stroke); padding: 2px; }
+:root[data-skin="bauhaus"] .seg button { border-radius: 0; }
+:root[data-skin="bauhaus"] .level-chip { border: 2px solid var(--stroke); border-radius: 0; background: var(--yellow); color: #111; }
+:root[data-skin="bauhaus"] .icon-btn { border-radius: 0; border: 2px solid var(--stroke); background: transparent; }
+:root[data-skin="bauhaus"] .b2d { border-radius: 0; box-shadow: 0 0 0 5px var(--frame-3d), 10px 10px 0 5px var(--red); }
+:root[data-skin="bauhaus"] .toast { border-radius: 0; border: 2px solid var(--stroke); box-shadow: 4px 4px 0 var(--hard); }
+:root[data-skin="bauhaus"] .chart .col { fill: var(--blue); }
+:root[data-skin="bauhaus"] .chart .col.today { fill: var(--red); }
+:root[data-skin="bauhaus"] .chart .val { fill: color-mix(in srgb, var(--yellow) 45%, transparent); stroke: var(--stroke); }
+:root[data-skin="bauhaus"] .chart .dot { fill: var(--red); }
+
+/* Bauhaus taşları (SVG) */
+.bh { width: 82%; height: 82%; overflow: visible; filter: drop-shadow(0 .6cqw 0 rgba(0, 0, 0, .18)); }
+.bh .f { stroke-linejoin: miter; }
+.bh.w .f { fill: var(--piece-w); stroke: var(--piece-w-edge); stroke-width: 6; }
+.bh.b .f { fill: var(--piece-b); stroke: var(--piece-b); stroke-width: 2; }
+.bh.w .sep { fill: none; stroke: var(--piece-w-edge); stroke-width: 3; }
+.bh.b .sep { fill: none; stroke: rgba(255, 255, 255, .3); stroke-width: 3; }
+.promo-btn .bh { width: 56px; height: 56px; }
+.atab-glyph .bh { width: 34px; height: 34px; }
+
+/* Ana sayfa: Bauhaus kompozisyonu */
+.hero-board { position: relative; }
+.bh-deco { position: absolute; inset: -30px; pointer-events: none; z-index: 0; }
+.bh-deco i { position: absolute; display: block; border: 2px solid var(--stroke); }
+.bh-deco .c1 { width: 120px; height: 120px; border-radius: 50%; background: var(--red); left: -26px; top: -18px; }
+.bh-deco .s1 { width: 86px; height: 86px; background: var(--yellow); right: -12px; bottom: 90px; }
+.bh-deco .t1 { width: 0; height: 0; border: 0; border-left: 60px solid transparent; border-right: 60px solid transparent; border-bottom: 104px solid var(--blue); right: 10px; top: -36px; }
+.bh-deco .b1 { width: 14px; height: 150px; background: var(--stroke); left: -14px; top: 38%; border: 0; }
+.bh-deco .h1 { width: 70px; height: 35px; border-radius: 70px 70px 0 0; background: var(--blue); left: -18px; bottom: 60px; }
+.hero-board .board-wrap, .hero-board .board-caption { position: relative; z-index: 1; }
+.bh-legend { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; }
+.bh-legend div { display: grid; gap: 6px; justify-items: center; text-align: center; padding: 10px 6px; background: var(--surface); border: 2px solid var(--stroke); container-type: inline-size; }
+.bh-legend svg { width: 56px; height: 56px; }
+.bh-legend b { font: var(--display-weight) .8rem/1.1 var(--font-display); }
+.bh-legend span { font-size: .78rem; color: var(--ink-2); line-height: 1.3; }
+
+/* Sayfa geçişi: üç renk perde */
+.bh-curtain { position: fixed; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; visibility: hidden; }
+.bh-curtain i { position: absolute; top: -10%; bottom: -10%; left: -20%; width: 140%; border-right: 3px solid #111; }
+.bh-curtain .p1 { background: #d9241a; }
+.bh-curtain .p2 { background: #f6c018; }
+.bh-curtain .p3 { background: #1d4fa3; }
+.bh-curtain .p4 { background: #111; }
+.bh-curtain .mark { position: absolute; left: 50%; top: 50%; width: 140px; height: 140px; margin: -70px 0 0 -70px; opacity: 0; }
+.bh-curtain .mark svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Başarı kutlaması: geometrik konfeti */
+.confetti { position: fixed; inset: 0; z-index: 70; pointer-events: none; overflow: hidden; }
+.confetti i { position: absolute; display: block; width: 14px; height: 14px; border: 2px solid #111; }
+.confetti i.c { border-radius: 50%; }
+.confetti i.t { width: 0; height: 0; border: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 16px solid #1d4fa3; }
+
+@media (max-width: 860px) {
+  .bh-legend { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bh-deco { inset: -14px; }
+  .bh-deco .c1 { width: 80px; height: 80px; }
+  .bh-deco .t1 { border-left-width: 40px; border-right-width: 40px; border-bottom-width: 70px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .bh-curtain, .confetti { display: none !important; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }

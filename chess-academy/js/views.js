@@ -19,6 +19,9 @@
     var cur = P.xpForLevel(lv), nxt = P.xpForLevel(lv + 1);
     var el = screen('home');
     var boardHost = h('div.hero-board');
+    var deco = h('div.bh-deco.only-bauhaus', { 'aria-hidden': 'true' });
+    ['c1', 's1', 't1', 'b1', 'h1'].forEach(function (c) { deco.appendChild(h('i.' + c)); });
+    boardHost.appendChild(deco);
     var nextLabel = next ? (next.kind === 'lesson' ? 'Ders: ' + next.lesson.title : 'Alıştırma: ' + next.ex.title) : 'Tüm bölümleri bitirdin';
     var hero = h('div.hero',
       h('div.hero-text',
@@ -34,6 +37,21 @@
         h('p.next-label', { text: 'Sıradaki: ' + nextLabel })),
       boardHost);
     el.appendChild(hero);
+
+    // Bauhaus teması: taşların biçimi hareketini anlatır
+    var legend = h('div.bh-legend');
+    [['P', 'Piyon', 'Küçük küp: tek adım ileri'], ['R', 'Kale', 'Küp: düz hatlar'], ['B', 'Fil', 'X: çaprazlar'],
+     ['N', 'At', 'L: L biçiminde sıçrar'], ['Q', 'Vezir', 'Küp üstünde küre: her yön'], ['K', 'Şah', 'Döndürülmüş küp: her yöne bir kare']].forEach(function (x) {
+      var d = h('div');
+      d.innerHTML = root.bauhausSVG ? root.bauhausSVG(x[0]) : '';
+      d.appendChild(h('b', { text: x[1] }));
+      d.appendChild(h('span', { text: x[2] }));
+      legend.appendChild(d);
+    });
+    el.appendChild(h('div.block.only-bauhaus',
+      h('h2', { text: 'Biçim, hareketi anlatır' }),
+      h('p.muted', { text: 'Bu temadaki taşlar, Bauhaus okulunda Josef Hartwig\u2019in 1920\u2019lerde tasarladığı satranç takımından esinlenir: her taşın biçimi nasıl hareket ettiğini gösterir.' }),
+      legend));
 
     // Oyuncu profili merdiveni: en basitten en deneyimliye
     var ladder = h('ol.ladder', { 'aria-label': 'Oyuncu profili merdiveni' });
@@ -169,8 +187,10 @@
       tablist.innerHTML = '';
       tabs.forEach(function (t) {
         var stats = t.topic ? P.topicStats(t.topic) : null;
+        var gl = h('span.atab-glyph.pc.w');
+        root.drawPiece(gl, t.glyph.toUpperCase());
         var b = h('button.atab' + (t.id === cur ? '.on' : ''), { type: 'button', role: 'tab', 'aria-selected': String(t.id === cur), on: { click: function () { cur = t.id; app().specialTab = cur; render(); } } },
-          h('span.atab-glyph.pc.w', { text: root.pieceGlyph(t.glyph) }),
+          gl,
           h('span.atab-title', { text: t.title }),
           h('span.atab-meta', { text: stats ? stats.solved + ' / ' + stats.total : 'Deney alanı' }));
         tablist.appendChild(b);

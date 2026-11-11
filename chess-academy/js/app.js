@@ -26,7 +26,7 @@
         var head = scr.el.querySelector('h1, h2');
         if (head) { head.setAttribute('tabindex', '-1'); head.focus({ preventScroll: true }); }
         updateHeader();
-      }, opts.dir || 1, function () { return scr.el; });
+      }, opts.dir || 1, function () { return scr.el; }, { kind: opts.isMain ? 'main' : 'sub', route: opts.route });
     },
     route: function () {
       var name = (location.hash || '#ana').slice(1);
@@ -38,7 +38,7 @@
       });
       M.placeIndicator(true);
       M.syncDrawer();
-      App.showScreen(V[ROUTES[name]](), { dir: dir, isMain: true });
+      App.showScreen(V[ROUTES[name]](), { dir: dir, isMain: true, route: name });
     },
     openLesson: function (sec, lesson) {
       App.pathOpen = sec.id;
@@ -160,6 +160,7 @@
   // ---- Tema ----
   function applySkin(id, announce) {
     M.setSkin(id);
+    P.state.settings.skinPicked = true;
     P.setSetting('skin', M.skin());
     // 3B tahta renklerini CSS belirteçlerinden okur: yeni temayla yeniden kur.
     root.BoardView.instances.forEach(function (b) {
@@ -191,8 +192,11 @@
   root.BoardView.showLegal = st.legal !== false;
   root.BoardView.mode = st.mode === '3d' ? '3d' : '2d';
   setModeButtons(root.BoardView.mode);
-  M.setSkin(M.valid(st.skin) ? st.skin : M.DEFAULT);
+  // Kullanıcı Ayarlar'dan bir tema seçmediyse güncel varsayılan tema kullanılır.
+  M.setSkin(st.skinPicked && M.valid(st.skin) ? st.skin : M.DEFAULT);
   M.initMenu();
+  M.initTilt();
+  M.loadGsap().then(function () { M.placeIndicator(false); });
   window.addEventListener('hashchange', App.route);
   App.route();
   // Buluttan daha yeni bir ilerleme gelirse ana ekranları tazele (alıştırma ortasında bölme).

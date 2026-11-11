@@ -194,6 +194,7 @@
       if (ex.explain) resultEl.appendChild(h('p.explain', { html: ex.explain }));
       if (res.levelUp) resultEl.appendChild(h('p.levelup', { text: 'Seviye atladın: ' + res.levelUp + '. seviye, unvanın ' + P.titleFor(res.levelUp) + '.' }));
       (res.badges || []).forEach(function (b) { resultEl.appendChild(h('p.badge-won', { text: 'Yeni rozet: ' + b.name + ' (' + b.desc + ')' })); });
+      if (res.status === 'solved' && root.Motion) root.Motion.celebrate(resultEl, !!res.levelUp || res.stars === 3);
       var row = h('div.controls');
       if (ctx.onNext && ctx.hasNext && ctx.hasNext()) row.appendChild(UI.btn('Sonraki alıştırma', { kind: 'primary', icon: 'next', onClick: function () { cleanup(); ctx.onNext(); } }));
       row.appendChild(UI.btn('Tekrar dene', { kind: 'secondary', icon: 'reset', onClick: function () { cleanup(); ctx.onRetry(); } }));
