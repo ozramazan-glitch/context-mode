@@ -6,28 +6,39 @@
   var current = null;
 
   var ROUTES = { ana: 'home', yol: 'path', ozel: 'special', gelisim: 'progress', oyna: 'play', sozluk: 'glossary' };
+  var ORDER = ['ana', 'yol', 'ozel', 'gelisim', 'oyna', 'sozluk'];
+  var lastRoute = null;
+  var M = root.Motion;
 
   var App = {
     pathOpen: null, specialTab: null, playLevel: null, playColor: null,
-    showScreen: function (scr) {
-      if (current && current.destroy) { try { current.destroy(); } catch (e) { console.error(e); } }
-      current = scr;
-      App.inMain = false;
-      main.innerHTML = '';
-      main.appendChild(scr.el);
-      window.scrollTo(0, 0);
-      var head = scr.el.querySelector('h1, h2');
-      if (head) { head.setAttribute('tabindex', '-1'); head.focus({ preventScroll: true }); }
-      updateHeader();
+    // Ekranı temanın geçiş animasyonuyla değiştirir. opts: { dir: 1 | -1, isMain }
+    showScreen: function (scr, opts) {
+      opts = opts || {};
+      M.closeMenu();
+      M.run(function () {
+        if (current && current.destroy) { try { current.destroy(); } catch (e) { console.error(e); } }
+        current = scr;
+        App.inMain = !!opts.isMain;
+        main.innerHTML = '';
+        main.appendChild(scr.el);
+        window.scrollTo(0, 0);
+        var head = scr.el.querySelector('h1, h2');
+        if (head) { head.setAttribute('tabindex', '-1'); head.focus({ preventScroll: true }); }
+        updateHeader();
+      }, opts.dir || 1, function () { return scr.el; });
     },
     route: function () {
       var name = (location.hash || '#ana').slice(1);
-      var view = ROUTES[name] || 'home';
-      App.showScreen(V[view]());
-      App.inMain = true;
+      if (!ROUTES[name]) name = 'ana';
+      var dir = App.inMain === false && lastRoute ? -1 : (ORDER.indexOf(name) >= ORDER.indexOf(lastRoute || 'ana') ? 1 : -1);
+      lastRoute = name;
       Array.prototype.forEach.call(document.querySelectorAll('.nav a'), function (a) {
         if (a.getAttribute('href') === '#' + name) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
       });
+      M.placeIndicator(true);
+      M.syncDrawer();
+      App.showScreen(V[ROUTES[name]](), { dir: dir, isMain: true });
     },
     openLesson: function (sec, lesson) {
       App.pathOpen = sec.id;
@@ -115,6 +126,19 @@
       return h('label.check', { for: id }, cb, h('span', { text: label }));
     }
     settingsPanel.appendChild(h('h2', { text: 'Ayarlar' }));
+    // Tema seçimi
+    var list = h('div.skin-list', { role: 'radiogroup', 'aria-label': 'Tema' });
+    M.SKINS.forEach(function (sk) {
+      var id = 'skin-' + sk.id;
+      var rb = h('input', { type: 'radio', name: 'skin', id: id, value: sk.id });
+      rb.checked = M.skin() === sk.id;
+      rb.addEventListener('change', function () { if (rb.checked) applySkin(sk.id, true); });
+      var sw = h('span.sw');
+      sk.sw.forEach(function (c) { sw.appendChild(h('span', { style: 'background:' + c })); });
+      list.appendChild(h('label.skin-opt', { for: id }, rb, h('b', { text: sk.name }), h('span.small.muted', { text: sk.note }), sw));
+    });
+    settingsPanel.appendChild(h('p.field-label', { text: 'Tema' }));
+    settingsPanel.appendChild(list);
     settingsPanel.appendChild(toggle('coords', 'Tahtada koordinatları göster', function (v) { root.BoardView.coords = v; root.BoardView.refreshAll(); }));
     settingsPanel.appendChild(toggle('legal', 'Seçili taşın gidebileceği kareleri göster', function (v) { root.BoardView.showLegal = v; root.BoardView.refreshAll(); }));
     settingsPanel.appendChild(h('p.small.muted', { text: '2B / 3B görünüm üst menüden değiştirilir. 3B görünüm ilk açılışta internetten bir grafik kitaplığı indirir.' }));
@@ -123,6 +147,7 @@
     var open = settingsPanel.hidden;
     if (open) renderSettings();
     settingsPanel.hidden = !open;
+    settingsPanel.classList.toggle('pop', open);
     settingsBtn.setAttribute('aria-expanded', String(open));
   });
   document.addEventListener('click', function (ev) {
@@ -131,6 +156,27 @@
     }
   });
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !settingsPanel.hidden) { settingsPanel.hidden = true; settingsBtn.focus(); } });
+
+  // ---- Tema ----
+  function applySkin(id, announce) {
+    M.setSkin(id);
+    P.setSetting('skin', M.skin());
+    // 3B tahta renklerini CSS belirteçlerinden okur: yeni temayla yeniden kur.
+    root.BoardView.instances.forEach(function (b) {
+      if (!b.destroyed && b.modeName === '3d') { b.modeName = null; b.setMode('3d'); }
+    });
+    root.BoardView.refreshAll();
+    if (announce) {
+      var sk = M.SKINS.filter(function (x) { return x.id === M.skin(); })[0];
+      UI.toast('Tema: ' + (sk ? sk.name : M.skin()));
+    }
+  }
+
+  // ---- Üst çubuk gölgesi ve menü göstergesi ----
+  var topbar = document.querySelector('.topbar');
+  window.addEventListener('scroll', function () { if (topbar) topbar.classList.toggle('scrolled', window.scrollY > 4); }, { passive: true });
+  window.addEventListener('resize', function () { M.placeIndicator(false); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { M.placeIndicator(false); });
 
   // ---- Süre sayacı: sekme görünür ve son 60 sn içinde etkileşim varsa ----
   var lastAct = Date.now();
@@ -145,6 +191,8 @@
   root.BoardView.showLegal = st.legal !== false;
   root.BoardView.mode = st.mode === '3d' ? '3d' : '2d';
   setModeButtons(root.BoardView.mode);
+  M.setSkin(M.valid(st.skin) ? st.skin : M.DEFAULT);
+  M.initMenu();
   window.addEventListener('hashchange', App.route);
   App.route();
   // Buluttan daha yeni bir ilerleme gelirse ana ekranları tazele (alıştırma ortasında bölme).

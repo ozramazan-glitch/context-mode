@@ -25,6 +25,7 @@ node chess-academy/tools/build-single.mjs dist/satranc-akademisi.html
 | **Öğrenme Yolu** (birinci arayüz) | 8 bölüm, 37 ders, 55 alıştırma. Bölümler en basitten en deneyimli oyuncu profiline sıralıdır: Sıfırdan Başlayan → Kuralları Öğrenen → İlk Oyunlarını Oynayan → Hobi Oyuncusu → Gelişen Kulüp Oyuncusu → Turnuva Adayı → Deneyimli Oyuncu → Usta Adayı. Bir bölümün alıştırmalarının en az %75’i çözülünce sıradaki bölüm açılır. |
 | **Özel Hamleler Atölyesi** (ikinci arayüz) | Piyonun çift adımı, rok, geçerken alma ve terfi: kuralların tam listesi, adım adım gösterim ve 17 alıştırma. **Rok Laboratuvarı**’nda taşları serbestçe yerleştirip rok koşullarının (6 koşul) canlı olarak nasıl değiştiğini görürsünüz. |
 | **2B / 3B görünüm** | Üst menüdeki düğmeyle tüm tahtalar 2B ile 3B arasında geçer. 3B tahta sürüklenerek döndürülür, tekerlek veya iki parmakla yakınlaştırılır; hamleler 3B’de de tıklanarak yapılır. |
+| **Temalar ve hareket** | Ayarlar'dan seçilen 5 tema: Satranç Kitabı (varsayılan; kayan siyah menü kapsülü, sayfa geçişinde çapraz akan dama kareleri), Gece Turnuvası (koyu cam paneller, yaylanan parlak menü, odak geçişi), Mermer ve Pirinç (uzayıp toplanan pirinç çizgi, kartların sırayla yükselmesi), Satranç Saati (basılan tuş sekmeler, LCD göstergeler, kaydırma geçişi) ve ilk tema Kulüp Salonu. Telefonda menü, animasyonlu bir çekmeceye dönüşür. Sistemde “hareketi azalt” açıksa animasyonlar kapanır. |
 | **Gelişim Paneli** | Seviye ve unvan, XP çubuğu, tahmini bulmaca puanı ve grafiği, oyuncu profili yolculuğu (8 basamak), 7 beceri alanı için radar grafiği ve tablo, son 14 günün XP grafiği, günlük seri, 17 rozet, etkinlik geçmişi, öneriler, istatistikler, yedekleme/geri yükleme/sıfırlama. |
 | **Seviye belirleme sınavı** | Satranç bilenler için: her bölümden bir soru; ilk hatada biter ve geçilen bölümler açılır. |
 | **Serbest oyun** | Bilgisayara karşı üç zorluk seviyesinde, beyaz veya siyahla tam oyun. |
@@ -81,6 +82,7 @@ chess-academy/
 ├── js/progress.js      XP, seviye, puan, rozetler, kayıt
 ├── js/board.js         2B tahta ve ortak etkileşim
 ├── js/board3d.js       3B tahta (three.js)
+├── js/motion.js        Temalar, menü animasyonu, sayfa geçişleri
 ├── js/trainer.js       Ders oynatıcı ve alıştırma kuralları
 ├── js/views.js         Ekranlar
 ├── js/app.js           Yönlendirme, ayarlar
