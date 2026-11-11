@@ -11,6 +11,7 @@
   'use strict';
 
   var SKINS = [
+    { id: 'kuantum', name: 'Kuantum Arena', note: 'Fütüristik: uzay sahnesi, ışık hızı geçişi, hologram taşlar', sw: ['#05070f', '#3df2ff', '#b46bff', '#ff4fd8', '#ffc46b'] },
     { id: 'bauhaus', name: 'Bauhaus Satranç', note: 'Geometrik taşlar, üç renkli perde geçişi, biçim değiştiren menü', sw: ['#f3f2ee', '#d9241a', '#f6c018', '#1d4fa3', '#111111'] },
     { id: 'kitap', name: 'Satranç Kitabı', note: 'Siyah-beyaz, kobalt vurgu, dama dalgası geçişi', sw: ['#ffffff', '#111318', '#2f5bff', '#98a2b3'] },
     { id: 'gece', name: 'Gece Turnuvası', note: 'Koyu cam paneller, parlayan menü, odak geçişi', sw: ['#071518', '#3ee0b5', '#ffb547', '#3c7a70'] },
@@ -18,7 +19,7 @@
     { id: 'saat', name: 'Satranç Saati', note: 'Basılan tuşlar, LCD göstergeler, kaydırma geçişi', sw: ['#1c1f25', '#e2442f', '#8fd12b', '#e2e5e9'] },
     { id: 'kulup', name: 'Kulüp Salonu', note: 'İlk tema: yeşil çuha, ceviz tahta, geçiş yok', sw: ['#1d4a36', '#e8ece5', '#9a6a1c', '#ae7f55'] }
   ];
-  var DEFAULT = 'bauhaus';
+  var DEFAULT = 'kuantum';
   var STAGGER = { kitap: true, mermer: true };
   // Bauhaus menü göstergesi: sekme sırasına göre renk ve biçim
   var BH_IND = [
@@ -66,6 +67,7 @@
   function setSkin(id) {
     if (!valid(id)) id = DEFAULT;
     document.documentElement.setAttribute('data-skin', id);
+    if (root.Scene) { if (id === 'kuantum') root.Scene.start(); else root.Scene.stop(); }
     var nav = document.querySelector('.nav');
     if (nav) { nav.style.removeProperty('--ind-ink'); }
     var ind = document.querySelector('.nav-ind');
@@ -101,6 +103,15 @@
       lastLink = a;
       return;
     }
+    if (skin() === 'kuantum' && g && animate && wasOn) {
+      g.to(ind, { left: left, width: width, duration: 0.7, ease: 'expo.out', overwrite: true });
+      g.fromTo(ind, { scaleX: 1.15, opacity: 0.4 }, { scaleX: 1, opacity: 1, duration: 0.5, ease: 'power3.out' });
+      ind.classList.add('on');
+      lastLink = a;
+      return;
+    }
+    if (g) g.killTweensOf(ind);
+    ind.style.opacity = ''; ind.style.transform = '';
     if (!animate || !wasOn || reduced()) {
       ind.style.transition = 'none';
       ind.style.left = left + 'px'; ind.style.width = width + 'px';
@@ -138,10 +149,41 @@
         a.appendChild(s);
       });
       a.addEventListener('mouseenter', function () {
-        var g = G(); if (!g || skin() !== 'bauhaus') return;
+        var g = G(); if (!g) return;
+        if (skin() === 'kuantum') { scrambleSpans(a.querySelectorAll('.ch')); return; }
+        if (skin() !== 'bauhaus') return;
         g.fromTo(a.querySelectorAll('.ch'), { y: 0 }, { y: -5, duration: 0.16, stagger: 0.022, ease: 'power2.out', yoyo: true, repeat: 1, overwrite: true });
       });
     });
+  }
+
+  // ---- Şifre çözme efekti ----
+  var GLYPHS = '<>/\\|_-=+*#01ΣΔΩ░▒▓';
+  function rnd() { return GLYPHS.charAt(Math.floor(Math.random() * GLYPHS.length)); }
+  function scrambleSpans(spans) {
+    Array.prototype.forEach.call(spans, function (sp, i) {
+      if (sp.dataset.busy) return;
+      var orig = sp.textContent;
+      if (orig === '\u00A0') return;
+      sp.dataset.busy = '1';
+      var n = 0;
+      var t = setInterval(function () {
+        n++;
+        if (n > 3 + i) { clearInterval(t); sp.textContent = orig; delete sp.dataset.busy; return; }
+        sp.textContent = rnd();
+      }, 38);
+    });
+  }
+  function scrambleText(el, dur) {
+    var g = G(); if (!g || !el || el.children.length) return;
+    var final = el.textContent;
+    if (!final || final.length > 80) return;
+    var o = { p: 0 };
+    g.to(o, { p: 1, duration: dur || 0.8, ease: 'power1.out', onUpdate: function () {
+      var k = Math.floor(o.p * final.length), out = final.slice(0, k);
+      for (var i = k; i < final.length; i++) out += final.charAt(i) === ' ' ? ' ' : rnd();
+      el.textContent = out;
+    }, onComplete: function () { el.textContent = final; } });
   }
 
   // ---- Telefon menüsü ----
@@ -239,19 +281,59 @@
     }
   }
 
+  // Kuantum: parçalar bulanıktan netleşerek gelir, başlıklar şifre çözer gibi belirir
+  function kuantumEnter(el) {
+    var g = G(); if (!g || !el) return;
+    var kids = Array.prototype.slice.call(el.children, 0, 10);
+    g.fromTo(kids, { y: 26, opacity: 0, filter: 'blur(8px)' }, { y: 0, opacity: 1, filter: 'blur(0px)', duration: 0.7, stagger: 0.08, ease: 'power3.out', clearProps: 'transform,opacity,filter' });
+    Array.prototype.forEach.call(el.querySelectorAll('h1, .panel-title, .page-head h2, .station-title'), function (h, i) { if (i < 8) setTimeout(function () { scrambleText(h, 0.7); }, i * 60); });
+    Array.prototype.forEach.call(el.querySelectorAll('.kpi-value, .level-line b'), function (n) {
+      var m = n.textContent.match(/^(\D*)(\d+)(.*)$/);
+      if (!m) return;
+      var target = +m[2], o = { v: 0 };
+      g.to(o, { v: target, duration: 1.2, delay: 0.2, ease: 'power2.out', onUpdate: function () { n.textContent = m[1] + Math.round(o.v) + m[3]; } });
+    });
+    Array.prototype.forEach.call(el.querySelectorAll('.bar span'), function (b, i) {
+      g.from(b, { width: 0, duration: 1.1, delay: 0.25 + Math.min(i, 8) * 0.04, ease: 'expo.out' });
+    });
+    var pcs = el.querySelectorAll('.hero-board .pc:not(:empty)');
+    if (pcs.length) g.from(pcs, { opacity: 0, scale: 1.8, filter: 'blur(6px)', duration: 0.5, stagger: { each: 0.03, from: 'random' }, ease: 'power2.out', delay: 0.2, clearProps: 'transform,opacity,filter' });
+  }
+
+  // Kuantum: imleci izleyen ışık hâlesi
+  function initGlow() {
+    var glow = document.createElement('div');
+    glow.className = 'cursor-glow'; glow.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(glow, document.body.firstChild ? document.body.firstChild.nextSibling : null);
+    var qx = null, qy = null;
+    document.addEventListener('pointermove', function (ev) {
+      if (ev.pointerType !== 'mouse' || skin() !== 'kuantum' || reduced()) return;
+      glow.classList.add('on');
+      var g = root.gsap;
+      if (g && !qx) { qx = g.quickTo(glow, 'x', { duration: 0.6, ease: 'power3' }); qy = g.quickTo(glow, 'y', { duration: 0.6, ease: 'power3' }); }
+      if (qx) { qx(ev.clientX); qy(ev.clientY); } else glow.style.transform = 'translate(' + ev.clientX + 'px,' + ev.clientY + 'px)';
+    }, { passive: true });
+  }
+
   // Bauhaus: kartlar imleci izleyerek hafifçe eğilir
   function initTilt() {
     var cur = null;
     document.addEventListener('pointermove', function (ev) {
+      var sk = skin();
+      if (sk === 'kuantum' && ev.target.closest) {
+        var sp = ev.target.closest('.panel, .kpi, .card-link, .trainer-panel, .station, .ex-tile, .lesson-item, .atab, .level-block');
+        if (sp) { var rr = sp.getBoundingClientRect(); sp.style.setProperty('--mx', (ev.clientX - rr.left) + 'px'); sp.style.setProperty('--my', (ev.clientY - rr.top) + 'px'); }
+      }
       var g = G();
-      if (!g || skin() !== 'bauhaus' || ev.pointerType !== 'mouse') return;
+      if (!g || (sk !== 'bauhaus' && sk !== 'kuantum') || ev.pointerType !== 'mouse') return;
       var t = ev.target.closest && ev.target.closest('.card-link, .ex-tile:not(:disabled), .lesson-item, .atab');
       if (cur && cur !== t) { g.to(cur, { rotationX: 0, rotationY: 0, duration: 0.5, ease: 'elastic.out(1, 0.6)' }); cur = null; }
       if (!t) return;
       cur = t;
       var r = t.getBoundingClientRect();
       var px = (ev.clientX - r.left) / r.width - 0.5, py = (ev.clientY - r.top) / r.height - 0.5;
-      g.to(t, { rotationY: px * 10, rotationX: -py * 10, transformPerspective: 700, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
+      var amp = sk === 'kuantum' ? 7 : 10;
+      g.to(t, { rotationY: px * amp, rotationX: -py * amp, transformPerspective: 700, duration: 0.35, ease: 'power2.out', overwrite: 'auto' });
     }, { passive: true });
   }
 
@@ -266,7 +348,42 @@
     return c;
   }
 
+  function scanEl() {
+    var s = document.getElementById('scanline');
+    if (s) return s;
+    s = document.createElement('div');
+    s.id = 'scanline'; s.className = 'scanline'; s.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(s);
+    return s;
+  }
+
   var TRANS = {
+    kuantum: function (swap, dir, getEl, info) {
+      var g = G();
+      if (!g) return TRANS.gece(swap, dir, getEl);
+      if (root.Scene) root.Scene.warp();
+      var m = main(), scan = scanEl();
+      var sub = info && info.kind === 'sub';
+      return new Promise(function (resolve) {
+        var o = { p: 0 }, top = 0, H = 1, mh = 0;
+        var tl = g.timeline({ onComplete: resolve });
+        tl.set(scan, { visibility: 'visible', y: 0 })
+          .to(m, { opacity: 0, y: -14, scale: 0.985, filter: 'blur(8px)', duration: sub ? 0.18 : 0.28, ease: 'power2.in' }, 0)
+          .to(scan, { y: root.innerHeight, duration: sub ? 0.25 : 0.4, ease: 'power2.inOut' }, 0)
+          .add(function () {
+            swap();
+            g.set(m, { opacity: 1, y: 0, scale: 1, filter: 'none' });
+            top = m.getBoundingClientRect().top; H = Math.max(root.innerHeight - top, 120); mh = m.offsetHeight;
+            m.style.clipPath = 'inset(0 0 ' + mh + 'px 0)';
+            g.set(scan, { y: Math.max(0, top) });
+            kuantumEnter(getEl());
+          })
+          .to(o, { p: 1, duration: sub ? 0.35 : 0.55, ease: 'power2.out', onUpdate: function () {
+            m.style.clipPath = 'inset(0 0 ' + Math.max(0, mh - o.p * H) + 'px 0)';
+            g.set(scan, { y: Math.max(0, top) + o.p * H });
+          }, onComplete: function () { m.style.clipPath = ''; g.set(scan, { visibility: 'hidden' }); } });
+      });
+    },
     bauhaus: function (swap, dir, getEl, info) {
       var g = G();
       if (!g) return TRANS.mermer(swap, dir, getEl);
@@ -352,6 +469,7 @@
       first = false;
       swap();
       if (skin() === 'bauhaus') { killLive(); bauhausEnter(getEl()); }
+      if (skin() === 'kuantum') kuantumEnter(getEl());
       return;
     }
     busy = true;
@@ -359,7 +477,9 @@
     var finish = function () {
       busy = false;
       var m = main(); if (m) { m.style.opacity = ''; m.style.transform = ''; m.style.filter = ''; }
-      if (pending) { var p = pending; pending = null; killLive(); p.swap(); if (skin() === 'bauhaus') bauhausEnter(p.getEl()); }
+      if (m) m.style.clipPath = '';
+      var sc = document.getElementById('scanline'); if (sc) sc.style.visibility = 'hidden';
+      if (pending) { var p = pending; pending = null; killLive(); p.swap(); if (skin() === 'bauhaus') bauhausEnter(p.getEl()); if (skin() === 'kuantum') kuantumEnter(p.getEl()); }
     };
     t(swap, dir || 1, getEl, info || {}).then(finish, finish);
   }
@@ -372,7 +492,8 @@
     var layer = document.createElement('div');
     layer.className = 'confetti'; layer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(layer);
-    var colors = ['#d9241a', '#f6c018', '#1d4fa3', '#111111'];
+    var neon = skin() === 'kuantum';
+    var colors = neon ? ['#3df2ff', '#b46bff', '#ff4fd8', '#ffffff'] : ['#d9241a', '#f6c018', '#1d4fa3', '#111111'];
     var n = big ? 70 : 42, items = [];
     for (var i = 0; i < n; i++) {
       var el = document.createElement('i');
@@ -381,6 +502,12 @@
       else if (kind === 1) { el.style.background = colors[1]; }
       else if (kind === 2) { el.className = 't'; }
       else { el.style.background = colors[3]; el.style.width = '22px'; el.style.height = '6px'; }
+      if (neon) {
+        var col = colors[i % 4];
+        el.className = i % 3 ? 'c' : '';
+        el.style.border = '0'; el.style.width = el.style.height = (4 + Math.random() * 7) + 'px';
+        el.style.background = col; el.style.boxShadow = '0 0 10px ' + col + ', 0 0 20px ' + col;
+      }
       el.style.left = ox + 'px'; el.style.top = oy + 'px';
       layer.appendChild(el);
       items.push(el);
@@ -421,6 +548,8 @@
     syncDrawer: syncDrawer,
     initMenu: initMenu,
     initTilt: initTilt,
+    initGlow: initGlow,
+    scrambleText: scrambleText,
     loadGsap: loadGsap,
     celebrate: celebrate,
     closeMenu: function () {}

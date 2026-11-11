@@ -162,10 +162,18 @@
     this.tweens = [];
     this.stars = [];
     var white = cssVar('--piece-3d-w', '#efe4cf'), black = cssVar('--piece-3d-b', '#2a2420');
-    this.mat = {
-      w: new T.MeshStandardMaterial({ color: new T.Color(white), roughness: 0.42, metalness: 0.05 }),
-      b: new T.MeshStandardMaterial({ color: new T.Color(black), roughness: 0.38, metalness: 0.12 })
-    };
+    if (document.documentElement.getAttribute('data-skin') === 'kuantum') {
+      // Hologram taşlar: içten ışıyan, yarı saydam
+      this.mat = {
+        w: new T.MeshStandardMaterial({ color: new T.Color(white), emissive: new T.Color('#1fb5d0'), emissiveIntensity: 0.6, roughness: 0.2, metalness: 0.35, transparent: true, opacity: 0.92 }),
+        b: new T.MeshStandardMaterial({ color: new T.Color(black), emissive: new T.Color('#9a1fb0'), emissiveIntensity: 0.55, roughness: 0.25, metalness: 0.45, transparent: true, opacity: 0.95 })
+      };
+    } else {
+      this.mat = {
+        w: new T.MeshStandardMaterial({ color: new T.Color(white), roughness: 0.42, metalness: 0.05 }),
+        b: new T.MeshStandardMaterial({ color: new T.Color(black), roughness: 0.38, metalness: 0.12 })
+      };
+    }
     this.ray = new T.Raycaster();
     this.ptr = new T.Vector2();
     this.dirty = true;
@@ -202,6 +210,14 @@
     for (var r = 0; r < 8; r++) for (var f = 0; f < 8; f++) {
       g.fillStyle = (f + r) % 2 === 1 ? light : dark; // r: 0 = 1. sıra
       g.fillRect(m + f * unit, m + (7 - r) * unit, unit, unit);
+    }
+    if (document.documentElement.getAttribute('data-skin') === 'kuantum') {
+      // Neon ızgara çizgileri
+      g.strokeStyle = 'rgba(61, 242, 255, .55)'; g.lineWidth = 2;
+      for (var k = 0; k <= 8; k++) {
+        g.beginPath(); g.moveTo(m + k * unit, m); g.lineTo(m + k * unit, m + 8 * unit); g.stroke();
+        g.beginPath(); g.moveTo(m, m + k * unit); g.lineTo(m + 8 * unit, m + k * unit); g.stroke();
+      }
     }
     g.fillStyle = cssVar('--frame-3d-ink', '#f1e3c8');
     g.font = '600 ' + Math.round(unit * 0.3) + 'px "IBM Plex Mono", monospace';

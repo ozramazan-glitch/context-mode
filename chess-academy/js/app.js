@@ -196,6 +196,7 @@
   M.setSkin(st.skinPicked && M.valid(st.skin) ? st.skin : M.DEFAULT);
   M.initMenu();
   M.initTilt();
+  M.initGlow();
   M.loadGsap().then(function () { M.placeIndicator(false); });
   window.addEventListener('hashchange', App.route);
   App.route();
