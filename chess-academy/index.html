@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Satranç Akademisi</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Sıfırdan ustalığa aşama aşama satranç eğitimi: 8 bölüm, özel hamleler atölyesi, 2B/3B tahta ve ayrıntılı gelişim paneli.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..800&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400..700&family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lexend:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Oxanium:wght@400..800&family=Playfair+Display:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&family=Unbounded:wght@500..800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Symbols+2&text=%E2%99%9A%E2%99%9B%E2%99%9C%E2%99%9D%E2%99%9E%E2%99%9F&display=block">
+<link rel="stylesheet" href="css/style.css">
+<script>
+  // Temayı ilk boyamadan önce uygula (Ayarlar'dan seçim yapılmadıysa: Kuantum Sakin).
+  (function () {
+    var s = 'sakin';
+    try { var d = JSON.parse(localStorage.getItem('satranc-akademisi-v1') || 'null'); if (d && d.settings && d.settings.skinPicked && /^(sakin|ay|aurora|bulut|kuantum|bauhaus|kitap|gece|mermer|saat|kulup)$/.test(d.settings.skin)) s = d.settings.skin; } catch (e) { /* depolama yok */ }
+    document.documentElement.setAttribute('data-skin', s);
+  })();
+</script>
+</head>
+<body>
+<a class="skip" href="#main">İçeriğe geç</a>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="#ana" aria-label="Satranç Akademisi ana sayfa">
+      <span class="brand-mark" aria-hidden="true">&#9822;&#xFE0E;</span>
+      <span class="brand-name">Satranç Akademisi</span>
+    </a>
+    <nav class="nav" aria-label="Ana menü">
+      <span class="nav-ind" aria-hidden="true"></span>
+      <a href="#yol">Öğrenme Yolu</a>
+      <a href="#ozel">Özel Hamleler</a>
+      <a href="#gelisim">Gelişim</a>
+      <a href="#oyna">Oyna</a>
+      <a href="#sozluk">Sözlük</a>
+    </nav>
+    <div class="topbar-tools">
+      <div class="seg" id="mode-seg" role="group" aria-label="Tahta görünümü">
+        <button type="button" data-mode="2d" aria-pressed="true">2B</button>
+        <button type="button" data-mode="3d" aria-pressed="false">3B</button>
+      </div>
+      <a class="level-chip" id="level-chip" href="#gelisim">Sv 1 · Piyon</a>
+      <button type="button" class="icon-btn" id="settings-btn" aria-label="Ayarlar" aria-expanded="false" aria-controls="settings-panel">
+        <svg class="ic" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+      </button>
+      <div class="settings-panel" id="settings-panel" hidden></div>
+      <button type="button" class="menu-btn" id="menu-btn" aria-label="Menüyü aç" aria-expanded="false" aria-controls="drawer"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <nav class="drawer" id="drawer" aria-label="Menü" hidden></nav>
+</header>
+<div class="wipe" id="wipe" aria-hidden="true" hidden></div>
+<main id="main" class="main" tabindex="-1"></main>
+<footer class="foot">
+  <p>Satranç Akademisi · Kurallar ve bulmacalar dahili satranç motoruyla doğrulanır. İlerlemen bu tarayıcıda saklanır.</p>
+</footer>
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="modal-root"></div>
+<script src="js/engine.js"></script>
+<script src="js/kpk.js"></script>
+<script src="js/kxk.js"></script>
+<script src="js/curriculum.js"></script>
+<script src="js/special.js"></script>
+<script src="js/progress.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/board.js"></script>
+<script src="js/board3d.js"></script>
+<script src="js/scene.js"></script>
+<script src="js/motion.js"></script>
+<script src="js/trainer.js"></script>
+<script src="js/views.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
