@@ -191,6 +191,8 @@
     if (anim && !reduceMotion && deco.animate !== false) this.animate(anim);
   };
 
+  // Hamle canlandırması: taş hafifçe kalkarak kayar (uzun hamle biraz daha uzun
+  // sürer), alınan taş dönerek küçülüp kaybolur.
   Board2D.prototype.animate = function (m) {
     var o = this.orientation;
     function cr(s) { var f = s & 7, r = s >> 3; return o === 'w' ? [f, 7 - r] : [7 - f, r]; }
@@ -198,16 +200,60 @@
     if (m.flags && m.flags.indexOf('k') >= 0) pairs.push([m.to + 1, m.to - 1]);
     if (m.flags && m.flags.indexOf('q') >= 0) pairs.push([m.to - 2, m.to + 1]);
     var self = this;
-    pairs.forEach(function (pr) {
+    if (m.captured) {
+      var capSq = m.flags && m.flags.indexOf('e') >= 0 ? (m.to + (E.colorOf(m.piece) === 'w' ? -8 : 8)) : m.to;
+      var host = this.sq[capSq];
+      if (host) {
+        var g = document.createElement('span');
+        g.className = 'pc pc-ghost ' + (E.colorOf(m.captured) === 'w' ? 'w' : 'b');
+        g.setAttribute('aria-hidden', 'true');
+        drawPiece(g, m.captured);
+        host.appendChild(g);
+        setTimeout(function () { g.remove(); }, 420);
+      }
+    }
+    pairs.forEach(function (pr, k) {
       var a = cr(pr[0]), b = cr(pr[1]);
       var pc = self.sq[pr[1]].firstChild;
-      pc.style.transition = 'none';
-      pc.style.transform = 'translate(' + ((a[0] - b[0]) * 100) + '%,' + ((a[1] - b[1]) * 100) + '%)';
+      var dx = (a[0] - b[0]) * 100, dy = (a[1] - b[1]) * 100;
+      var dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      var dur = Math.round(Math.min(380, 190 + dist * 26));
       pc.style.zIndex = 5;
-      void pc.offsetWidth;
-      pc.style.transition = 'transform 200ms cubic-bezier(.2,.7,.3,1)';
-      pc.style.transform = '';
-      setTimeout(function () { pc.style.zIndex = ''; pc.style.transition = ''; }, 220);
+      if (pc.animate) {
+        var lift = k === 0 ? 1.12 : 1.04;
+        var an = pc.animate([
+          { transform: 'translate(' + dx + '%,' + dy + '%) scale(1)' },
+          { transform: 'translate(' + (dx * 0.45) + '%,' + (dy * 0.45) + '%) scale(' + lift + ')', offset: 0.5 },
+          { transform: 'translate(0,0) scale(1)' }
+        ], { duration: dur, easing: 'cubic-bezier(.3, .7, .3, 1)' });
+        an.finished.then(function () { pc.style.zIndex = ''; }, function () { pc.style.zIndex = ''; });
+      } else {
+        pc.style.transition = 'none';
+        pc.style.transform = 'translate(' + dx + '%,' + dy + '%)';
+        void pc.offsetWidth;
+        pc.style.transition = 'transform 200ms cubic-bezier(.2,.7,.3,1)';
+        pc.style.transform = '';
+        setTimeout(function () { pc.style.zIndex = ''; pc.style.transition = ''; }, 220);
+      }
+    });
+  };
+
+  // Geri bildirim: doğru karede halka dalgası, yanlış karede taş titrer.
+  Board2D.prototype.pulse = function (sqs, kind) {
+    var self = this;
+    sqs.forEach(function (s) {
+      var d = self.sq[s]; if (!d) return;
+      if (kind === 'good') {
+        var fx = document.createElement('span');
+        fx.className = 'fx'; fx.setAttribute('aria-hidden', 'true');
+        d.appendChild(fx);
+        setTimeout(function () { fx.remove(); }, 700);
+      } else if (kind === 'bad' && d.firstChild && d.firstChild.animate) {
+        d.firstChild.animate([
+          { transform: 'translateX(0)' }, { transform: 'translateX(-9%)' }, { transform: 'translateX(8%)' },
+          { transform: 'translateX(-5%)' }, { transform: 'translateX(3%)' }, { transform: 'translateX(0)' }
+        ], { duration: 380, easing: 'ease-out' });
+      }
     });
   };
 
@@ -360,6 +406,7 @@
     sqs = (Array.isArray(sqs) ? sqs : [sqs]).map(function (x) { return typeof x === 'number' ? x : E.sqIndex(x); });
     this.flashes[kind] = this.flashes[kind].concat(sqs);
     this.redraw();
+    if (this.r && this.r.pulse && !reduceMotion) this.r.pulse(sqs, kind);
     setTimeout(function () {
       self.flashes[kind] = self.flashes[kind].filter(function (x) { return sqs.indexOf(x) < 0; });
       self.redraw();

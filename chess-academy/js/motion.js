@@ -2,25 +2,35 @@
  * Tema ve hareket: tema değiştirme, menü göstergesi, telefon menüsü,
  * temaya özel sayfa geçişleri ve kutlama animasyonu.
  *
- * Bauhaus teması GSAP animasyon kitaplığını kullanır (ihtiyaç anında cdnjs,
- * olmazsa jsDelivr'den yüklenir). Kitaplık yüklenemezse tarayıcının kendi
- * Web Animations arayüzüyle daha sade sürüm çalışır. "Hareketi azalt"
- * tercihi açıksa geçişler animasyonsuz yapılır.
+ * Bauhaus ve Kuantum Arena temaları GSAP animasyon kitaplığını kullanır
+ * (ihtiyaç anında cdnjs, olmazsa jsDelivr'den yüklenir); yüklenemezse tarayıcının
+ * kendi Web Animations arayüzüyle daha sade sürüm çalışır. Sakin temalar ve
+ * ortak canlandırmalar (sayaçlar, çubuklar, kaydırınca belirme, sonuç kartı,
+ * tema dalgası) yalnızca tarayıcının kendi arayüzlerini kullanır. "Hareketi
+ * azalt" tercihi açıksa geçişler animasyonsuz yapılır.
  */
 (function (root) {
   'use strict';
 
+  // group: Ayarlar'daki başlık. Sakin temalar göz yormaması için düşük kontrastlı
+  // zemin, soluk vurgu ve çok yavaş ortam hareketi kullanır.
   var SKINS = [
-    { id: 'kuantum', name: 'Kuantum Arena', note: 'Fütüristik: uzay sahnesi, ışık hızı geçişi, hologram taşlar', sw: ['#05070f', '#3df2ff', '#b46bff', '#ff4fd8', '#ffc46b'] },
-    { id: 'bauhaus', name: 'Bauhaus Satranç', note: 'Geometrik taşlar, üç renkli perde geçişi, biçim değiştiren menü', sw: ['#f3f2ee', '#d9241a', '#f6c018', '#1d4fa3', '#111111'] },
-    { id: 'kitap', name: 'Satranç Kitabı', note: 'Siyah-beyaz, kobalt vurgu, dama dalgası geçişi', sw: ['#ffffff', '#111318', '#2f5bff', '#98a2b3'] },
-    { id: 'gece', name: 'Gece Turnuvası', note: 'Koyu cam paneller, parlayan menü, odak geçişi', sw: ['#071518', '#3ee0b5', '#ffb547', '#3c7a70'] },
-    { id: 'mermer', name: 'Mermer ve Pirinç', note: 'Mermer, zümrüt, pirinç çizgi, kademeli yükseliş', sw: ['#eceeec', '#0f3d33', '#b0812f', '#7c8e86'] },
-    { id: 'saat', name: 'Satranç Saati', note: 'Basılan tuşlar, LCD göstergeler, kaydırma geçişi', sw: ['#1c1f25', '#e2442f', '#8fd12b', '#e2e5e9'] },
-    { id: 'kulup', name: 'Kulüp Salonu', note: 'İlk tema: yeşil çuha, ceviz tahta, geçiş yok', sw: ['#1d4a36', '#e8ece5', '#9a6a1c', '#ae7f55'] }
+    { id: 'sakin', group: 'Sakin fütüristik', name: 'Kuantum Sakin', note: 'Koyu lacivert cam, soluk turkuaz; yavaş yıldızlar, yumuşak derinlik geçişi', sw: ['#0b1020', '#7fd3e0', '#b9a3f0', '#3a4a74'] },
+    { id: 'ay', group: 'Sakin fütüristik', name: 'Ay Üssü', note: 'Açık gri cam paneller, süzülen ışık küreleri, beyaz kayan kapsül', sw: ['#e9ecf1', '#3f6fd8', '#c27a2c', '#aab7cb'] },
+    { id: 'aurora', group: 'Sakin fütüristik', name: 'Aurora', note: 'Koyu arduvaz, ağır kuzey ışığı, ince çizgi menü', sw: ['#141b26', '#6cc4b8', '#b4a7e6', '#71849a'] },
+    { id: 'bulut', group: 'Sakin fütüristik', name: 'Bulut Şehri', note: 'Pastel gökyüzü, süzülen bulutlar, yana kayan geçiş', sw: ['#f1f5f9', '#2f9a91', '#d9705a', '#9cc4c0'] },
+    { id: 'kuantum', group: 'Canlı', name: 'Kuantum Arena', note: 'Parlak fütüristik: uzay sahnesi, ışık hızı geçişi, neon taşlar', sw: ['#05070f', '#3df2ff', '#b46bff', '#ff4fd8', '#ffc46b'] },
+    { id: 'bauhaus', group: 'Canlı', name: 'Bauhaus Satranç', note: 'Geometrik taşlar, üç renkli perde geçişi, biçim değiştiren menü', sw: ['#f3f2ee', '#d9241a', '#f6c018', '#1d4fa3', '#111111'] },
+    { id: 'kitap', group: 'Klasik', name: 'Satranç Kitabı', note: 'Siyah-beyaz, kobalt vurgu, dama dalgası geçişi', sw: ['#ffffff', '#111318', '#2f5bff', '#98a2b3'] },
+    { id: 'gece', group: 'Klasik', name: 'Gece Turnuvası', note: 'Koyu cam paneller, parlayan menü, odak geçişi', sw: ['#071518', '#3ee0b5', '#ffb547', '#3c7a70'] },
+    { id: 'mermer', group: 'Klasik', name: 'Mermer ve Pirinç', note: 'Mermer, zümrüt, pirinç çizgi, kademeli yükseliş', sw: ['#eceeec', '#0f3d33', '#b0812f', '#7c8e86'] },
+    { id: 'saat', group: 'Klasik', name: 'Satranç Saati', note: 'Basılan tuşlar, LCD göstergeler, kaydırma geçişi', sw: ['#1c1f25', '#e2442f', '#8fd12b', '#e2e5e9'] },
+    { id: 'kulup', group: 'Klasik', name: 'Kulüp Salonu', note: 'İlk tema: yeşil çuha, ceviz tahta, geçiş yok', sw: ['#1d4a36', '#e8ece5', '#9a6a1c', '#ae7f55'] }
   ];
-  var DEFAULT = 'kuantum';
+  var DEFAULT = 'sakin';
   var STAGGER = { kitap: true, mermer: true };
+  // Sayaçları ve çubukları kendi GSAP girişinde yürüten temalar
+  var OWN_ENTER = { bauhaus: true, kuantum: true };
   // Bauhaus menü göstergesi: sekme sırasına göre renk ve biçim
   var BH_IND = [
     { c: '--red', ink: '#fff', r: '999px' },
@@ -67,12 +77,26 @@
   function setSkin(id) {
     if (!valid(id)) id = DEFAULT;
     document.documentElement.setAttribute('data-skin', id);
-    if (root.Scene) { if (id === 'kuantum') root.Scene.start(); else root.Scene.stop(); }
+    if (root.Scene) {
+      if (id === 'kuantum' || id === 'sakin') { if (root.Scene.setMode) root.Scene.setMode(id === 'sakin' ? 'calm' : 'arena'); root.Scene.start(); }
+      else root.Scene.stop();
+    }
+    ambient();
     var nav = document.querySelector('.nav');
     if (nav) { nav.style.removeProperty('--ind-ink'); }
     var ind = document.querySelector('.nav-ind');
     if (ind) { ind.style.backgroundColor = ''; ind.style.borderRadius = ''; }
     placeIndicator(false);
+  }
+
+  // Sakin temaların ortam katmanı (ışık küreleri, kuzey ışığı, bulutlar). Hangisinin
+  // görüneceğine CSS karar verir; görünmeyen öğelerin animasyonu çalışmaz.
+  function ambient() {
+    if (document.getElementById('amb-layer') || !document.body) return;
+    var a = document.createElement('div');
+    a.id = 'amb-layer'; a.className = 'amb-layer'; a.setAttribute('aria-hidden', 'true');
+    a.innerHTML = '<i class="orb o1"></i><i class="orb o2"></i><i class="dots"></i><i class="aur"></i><i class="cloud c1"></i><i class="cloud c2"></i><i class="cloud c3"></i>';
+    document.body.insertBefore(a, document.body.firstChild);
   }
 
   // ---- Menü göstergesi ----
@@ -239,6 +263,8 @@
   // ---- Yardımcılar ----
   function anim(el, kf, opt) {
     if (!el || !el.animate || reduced()) return Promise.resolve();
+    // Ana kap hiçbir zaman son karede (ör. görünmez) bırakılmaz.
+    if (opt && opt.fill === 'forwards' && el === main()) opt = Object.assign({}, opt, { fill: 'none' });
     try { return el.animate(kf, opt).finished.catch(function () {}); } catch (e) { return Promise.resolve(); }
   }
   function stagger(el) {
@@ -248,6 +274,153 @@
     setTimeout(function () { el.classList.remove('enter'); }, 1200);
   }
   function main() { return document.getElementById('main'); }
+  // Taşınan/ölçeklenen öğe: ana kabın içindeki ekran. Ana kap (overflow-x: clip)
+  // taşanı kırptığı için geçiş sırasında yatay kaydırma çubuğu açılmaz.
+  function screenEl() { var m = main(); return (m && m.firstElementChild) || m; }
+
+  // Ekranın üst düzey parçaları sırayla, hafifçe yükselerek gelir (GSAP gerekmez).
+  function rise(el, o) {
+    if (!el || reduced()) return;
+    o = o || {};
+    var kids = Array.prototype.slice.call(el.children, 0, 10);
+    kids.forEach(function (c, i) {
+      var from = { opacity: 0, transform: 'translateY(' + (o.y || 16) + 'px)' + (o.scale ? ' scale(' + o.scale + ')' : '') };
+      if (o.blur) from.filter = 'blur(' + o.blur + 'px)';
+      var to = { opacity: 1, transform: 'none' };
+      if (o.blur) to.filter = 'blur(0px)';
+      anim(c, [from, to], { duration: o.dur || 480, delay: (o.delay || 0) + i * (o.step || 55), easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+  }
+
+  // Sayılar sıfırdan sayar, ilerleme çubukları dolar (GSAP gerekmez).
+  function countUp(el) {
+    if (!el || reduced()) return;
+    Array.prototype.forEach.call(el.querySelectorAll('.kpi-value, .level-line b'), function (n) {
+      var m = n.textContent.match(/^(\D*)(\d+)(.*)$/);
+      if (!m || +m[2] < 2) return;
+      var target = +m[2], t0 = 0, dur = 900, final = n.textContent;
+      (function tick(t) {
+        if (!t0) t0 = t;
+        var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+        n.textContent = m[1] + Math.round(target * e) + m[3];
+        if (k < 1 && n.isConnected) requestAnimationFrame(tick); else n.textContent = final;
+      })(performance.now());
+    });
+  }
+  function growBars(el) {
+    if (!el || reduced()) return;
+    Array.prototype.forEach.call(el.querySelectorAll('.bar span'), function (b, i) {
+      var w = b.style.width; if (!w || w === '0%') return;
+      anim(b, [{ width: '0%' }, { width: w }], { duration: 900, delay: 150 + Math.min(i, 8) * 40, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+  }
+
+  // Kaydırınca beliren kartlar: ilk ekranın dışında kalan bloklar görünür alana
+  // girince yükselerek belirir. Aynı anda girenler sırayla gelir.
+  var REVEAL_SEL = '.panel, .level-block, .kpi, .card-link, .station, .grid-2 > *, .ex-grid > *, .chart-wrap, .gl-item, dl > div';
+  var io = null;
+  function reveal(el) {
+    if (!el || reduced() || skin() === 'kulup' || !('IntersectionObserver' in root)) return;
+    if (!io) {
+      io = new IntersectionObserver(function (entries) {
+        var n = 0;
+        entries.forEach(function (en) {
+          if (!en.isIntersecting) return;
+          var t = en.target;
+          io.unobserve(t);
+          t.style.transitionDelay = Math.min(n++, 6) * 70 + 'ms';
+          t.classList.add('rv-in');
+          setTimeout(function () { t.classList.remove('rv', 'rv-in'); t.style.transitionDelay = ''; }, 1400);
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    }
+    var H = root.innerHeight, seen = [];
+    Array.prototype.forEach.call(el.querySelectorAll(REVEAL_SEL), function (b) {
+      // İç içe bloklardan yalnızca en dıştaki canlandırılır
+      for (var i = 0; i < seen.length; i++) if (seen[i].contains(b)) return;
+      if (b.getBoundingClientRect().top < H) return;
+      seen.push(b);
+      b.classList.add('rv');
+      io.observe(b);
+    });
+  }
+
+  // Yeni ekran yerleşince her temada çalışan ortak canlandırmalar
+  function afterSwap(el) {
+    if (!el || skin() === 'kulup') return;
+    if (!OWN_ENTER[skin()]) { countUp(el); growBars(el); }
+    reveal(el);
+  }
+
+  // Tema değiştirme: yeni tema tıklanan noktadan dairesel bir dalgayla yayılır
+  // (View Transitions arayüzü olan tarayıcılarda; diğerlerinde hemen uygulanır).
+  function themeSwap(fn, x, y) {
+    if (reduced() || !document.startViewTransition) { fn(); return; }
+    var de = document.documentElement;
+    if (x == null) { x = root.innerWidth - 40; y = 30; }
+    var r = Math.hypot(Math.max(x, root.innerWidth - x), Math.max(y, root.innerHeight - y));
+    de.classList.add('theme-vt');
+    var t;
+    try { t = document.startViewTransition(fn); } catch (e) { de.classList.remove('theme-vt'); fn(); return; }
+    t.ready.then(function () {
+      de.animate({ clipPath: ['circle(0px at ' + x + 'px ' + y + 'px)', 'circle(' + r + 'px at ' + x + 'px ' + y + 'px)'] },
+        { duration: 700, easing: 'cubic-bezier(.4, 0, .2, 1)', pseudoElement: '::view-transition-new(root)' });
+    }).catch(function () {});
+    t.finished.then(function () { de.classList.remove('theme-vt'); }, function () { de.classList.remove('theme-vt'); });
+  }
+
+  // Ders kartı değişimi: metin, gidilen yönden kayarak gelir.
+  function slideIn(el, dir) {
+    anim(el, [{ opacity: 0, transform: 'translateX(' + (dir * 28) + 'px)', filter: 'blur(2px)' }, { opacity: 1, transform: 'none', filter: 'blur(0px)' }],
+      { duration: 380, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+  }
+
+  // Sonuç kartı: yaylanarak açılır, yıldızlar tek tek yanar, XP rozeti seviye
+  // göstergesine uçar.
+  function resultIn(el, xp) {
+    if (!el || reduced()) return;
+    anim(el, [{ opacity: 0, transform: 'translateY(14px) scale(.96)' }, { opacity: 1, transform: 'none' }], { duration: 520, easing: 'cubic-bezier(.34, 1.4, .64, 1)' });
+    Array.prototype.forEach.call(el.querySelectorAll('.stars .ic'), function (st, i) {
+      anim(st, [{ transform: 'scale(0) rotate(-90deg)', opacity: 0 }, { transform: 'scale(1.35) rotate(10deg)', opacity: 1, offset: 0.6 }, { transform: 'none', opacity: 1 }],
+        { duration: 520, delay: 220 + i * 150, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' });
+    });
+    if (xp) flyXp(el, '+' + xp + ' XP');
+  }
+  function flyXp(from, text) {
+    var chip = document.getElementById('level-chip');
+    if (!from || !chip || chip.offsetParent === null || !document.body.animate) return;
+    var a = from.getBoundingClientRect(), b = chip.getBoundingClientRect();
+    var f = document.createElement('div');
+    f.className = 'xp-fly'; f.setAttribute('aria-hidden', 'true'); f.textContent = text;
+    f.style.left = (a.left + a.width / 2) + 'px'; f.style.top = (a.top + 24) + 'px';
+    document.body.appendChild(f);
+    var dx = b.left + b.width / 2 - (a.left + a.width / 2), dy = b.top + b.height / 2 - (a.top + 24);
+    var p = f.animate([
+      { transform: 'translate(-50%, -50%) scale(.6)', opacity: 0 },
+      { transform: 'translate(-50%, -50%) translateY(-28px) scale(1.1)', opacity: 1, offset: 0.25 },
+      { transform: 'translate(-50%, -50%) translate(' + dx + 'px,' + dy + 'px) scale(.5)', opacity: 0.2 }
+    ], { duration: 1150, delay: 450, easing: 'cubic-bezier(.5, 0, .3, 1)', fill: 'both' });
+    p.finished.then(function () {
+      f.remove();
+      anim(chip, [{ transform: 'scale(1)' }, { transform: 'scale(1.18)', offset: 0.35 }, { transform: 'scale(1)' }], { duration: 480, easing: 'cubic-bezier(.34, 1.5, .64, 1)' });
+    }, function () { f.remove(); });
+  }
+
+  // Hızlanan ortam: Bulut Şehri'nde bulutlar geçiş sırasında hızlanıp yavaşlar,
+  // Aurora'da kuzey ışığı bir an parlar.
+  function gust(sel, rate, ms) {
+    var els = document.querySelectorAll(sel);
+    if (!els.length || reduced()) return;
+    var anims = [];
+    Array.prototype.forEach.call(els, function (e) { if (e.getAnimations) anims = anims.concat(e.getAnimations()); });
+    if (!anims.length) return;
+    var t0 = performance.now();
+    (function tick(t) {
+      var k = Math.min(1, (t - t0) / ms), r = 1 + (rate - 1) * Math.pow(1 - k, 2);
+      anims.forEach(function (a) { try { a.playbackRate = r; } catch (e) {} });
+      if (k < 1) requestAnimationFrame(tick);
+    })(t0);
+  }
 
   // Bauhaus: yeni ekranın parçaları sırayla, hafif dönerek yerine oturur; sayılar sayar.
   var live = [];
@@ -415,6 +588,48 @@
           .add(function () { bauhausEnter(getEl()); }, '-=0.32');
       });
     },
+    // Kuantum Sakin: hafif derinlik bulanıklığı, yıldızlar kısa süre hızlanır
+    sakin: function (swap, dir, getEl, info) {
+      var sub = info && info.kind === 'sub';
+      if (root.Scene) root.Scene.warp();
+      return anim(screenEl(), [{ opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }, { opacity: 0, transform: 'scale(.97)', filter: 'blur(4px)' }], { duration: sub ? 160 : 220, easing: 'cubic-bezier(.4, 0, 1, 1)', fill: 'forwards' })
+        .then(function () {
+          swap();
+          rise(getEl(), { y: 12, step: 50, dur: 520, delay: 60 });
+          return anim(getEl(), [{ opacity: 0, transform: 'scale(1.02)', filter: 'blur(4px)' }, { opacity: 1, transform: 'scale(1)', filter: 'blur(0px)' }], { duration: sub ? 320 : 440, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+        });
+    },
+    // Ay Üssü: eski sayfa geri çekilip bulanıklaşır, yenisi katman katman yükselir
+    ay: function (swap, dir, getEl, info) {
+      var sub = info && info.kind === 'sub';
+      return anim(screenEl(), [{ opacity: 1, transform: 'none', filter: 'blur(0px)' }, { opacity: 0, transform: 'translateY(-8px) scale(.985)', filter: 'blur(6px)' }], { duration: sub ? 150 : 200, easing: 'ease-in', fill: 'forwards' })
+        .then(function () {
+          swap();
+          rise(getEl(), { y: 22, scale: 0.985, blur: 4, step: 70, dur: 560 });
+        });
+    },
+    // Aurora: yumuşak solma, kuzey ışığı bir an parlar, parçalar sırayla gelir
+    aurora: function (swap, dir, getEl, info) {
+      var m = main(), sub = info && info.kind === 'sub';
+      var aur = document.querySelector('.amb-layer .aur');
+      if (aur && !sub) anim(aur, [{ opacity: 0.45 }, { opacity: 0.8, offset: 0.4 }, { opacity: 0.45 }], { duration: 1600, easing: 'ease-in-out', composite: 'replace' });
+      return anim(m, [{ opacity: 1 }, { opacity: 0 }], { duration: sub ? 140 : 190, easing: 'ease-in' })
+        .then(function () {
+          swap();
+          rise(getEl(), { y: 14, step: 60, dur: 500 });
+        });
+    },
+    // Bulut Şehri: sayfa gidiş yönüne doğru süzülür, bulutlar bir an hızlanır
+    bulut: function (swap, dir, getEl, info) {
+      var sub = info && info.kind === 'sub';
+      if (!sub) gust('.amb-layer .cloud', 14, 1400);
+      return anim(screenEl(), [{ opacity: 1, transform: 'none', filter: 'blur(0px)' }, { opacity: 0, transform: 'translateX(' + (-dir * 26) + 'px)', filter: 'blur(3px)' }], { duration: sub ? 170 : 230, easing: 'cubic-bezier(.5, 0, .9, .5)', fill: 'forwards' })
+        .then(function () {
+          swap();
+          rise(getEl(), { y: 8, step: 45, dur: 520, delay: 80 });
+          return anim(getEl(), [{ opacity: 0, transform: 'translateX(' + (dir * 26) + 'px)', filter: 'blur(3px)' }, { opacity: 1, transform: 'none', filter: 'blur(0px)' }], { duration: sub ? 320 : 480, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+        });
+    },
     kitap: function (swap, dir, getEl) {
       var wipe = document.getElementById('wipe');
       var bar = document.querySelector('.topbar');
@@ -438,23 +653,21 @@
         }));
       }).then(function () { wipe.hidden = true; wipe.innerHTML = ''; });
     },
-    gece: function (swap) {
-      var m = main();
-      return anim(m, [{ opacity: 1, filter: 'blur(0px)', transform: 'scale(1)' }, { opacity: 0, filter: 'blur(8px)', transform: 'scale(.985)' }], { duration: 170, easing: 'ease-in' })
+    gece: function (swap, dir, getEl) {
+      return anim(screenEl(), [{ opacity: 1, filter: 'blur(0px)', transform: 'scale(1)' }, { opacity: 0, filter: 'blur(8px)', transform: 'scale(.985)' }], { duration: 170, easing: 'ease-in', fill: 'forwards' })
         .then(function () {
           swap();
-          return anim(m, [{ opacity: 0, filter: 'blur(10px)', transform: 'scale(1.015)' }, { opacity: 1, filter: 'blur(0px)', transform: 'scale(1)' }], { duration: 340, easing: 'cubic-bezier(.2, .8, .2, 1)' });
+          return anim(getEl ? getEl() : screenEl(), [{ opacity: 0, filter: 'blur(10px)', transform: 'scale(1.015)' }, { opacity: 1, filter: 'blur(0px)', transform: 'scale(1)' }], { duration: 340, easing: 'cubic-bezier(.2, .8, .2, 1)' });
         });
     },
     mermer: function (swap, dir, getEl) {
       return anim(main(), [{ opacity: 1 }, { opacity: 0 }], { duration: 150, easing: 'ease-in' }).then(function () { swap(); stagger(getEl()); });
     },
-    saat: function (swap, dir) {
-      var m = main();
-      return anim(m, [{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: 'translateX(' + (-dir * 48) + 'px)' }], { duration: 180, easing: 'cubic-bezier(.5, 0, .9, .4)' })
+    saat: function (swap, dir, getEl) {
+      return anim(screenEl(), [{ opacity: 1, transform: 'translateX(0)' }, { opacity: 0, transform: 'translateX(' + (-dir * 48) + 'px)' }], { duration: 180, easing: 'cubic-bezier(.5, 0, .9, .4)', fill: 'forwards' })
         .then(function () {
           swap();
-          return anim(m, [{ opacity: 0, transform: 'translateX(' + (dir * 48) + 'px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 320, easing: 'cubic-bezier(.2, .9, .3, 1.12)' });
+          return anim(getEl(), [{ opacity: 0, transform: 'translateX(' + (dir * 48) + 'px)' }, { opacity: 1, transform: 'translateX(0)' }], { duration: 320, easing: 'cubic-bezier(.2, .9, .3, 1.12)' });
         });
     },
     kulup: function (swap) { swap(); return Promise.resolve(); }
@@ -463,13 +676,21 @@
   var busy = false, pending = null, first = true;
   // swap(): eski ekranı kaldırıp yenisini koyar. getEl(): yeni ekranın kök öğesi.
   // info: { kind: 'main' | 'sub', route }
+  // Geçiş olmadan (ilk açılış, bekleyen ekran) yeni ekranın giriş canlandırması
+  function enterOnly(el) {
+    var sk = skin();
+    if (sk === 'bauhaus') { killLive(); bauhausEnter(el); }
+    else if (sk === 'kuantum') kuantumEnter(el);
+    else if (sk === 'sakin' || sk === 'ay' || sk === 'aurora' || sk === 'bulut') rise(el, { y: 14, step: 55, dur: 500 });
+    else stagger(el);
+  }
   function run(swap, dir, getEl, info) {
-    if (busy) { pending = { swap: swap, getEl: getEl }; return; }
+    var swap2 = function () { swap(); afterSwap(getEl()); };
+    if (busy) { pending = { swap: swap2, getEl: getEl }; return; }
     if (first || reduced() || document.visibilityState === 'hidden') {
       first = false;
-      swap();
-      if (skin() === 'bauhaus') { killLive(); bauhausEnter(getEl()); }
-      if (skin() === 'kuantum') kuantumEnter(getEl());
+      swap2();
+      if (!reduced()) enterOnly(getEl());
       return;
     }
     busy = true;
@@ -479,9 +700,9 @@
       var m = main(); if (m) { m.style.opacity = ''; m.style.transform = ''; m.style.filter = ''; }
       if (m) m.style.clipPath = '';
       var sc = document.getElementById('scanline'); if (sc) sc.style.visibility = 'hidden';
-      if (pending) { var p = pending; pending = null; killLive(); p.swap(); if (skin() === 'bauhaus') bauhausEnter(p.getEl()); if (skin() === 'kuantum') kuantumEnter(p.getEl()); }
+      if (pending) { var p = pending; pending = null; killLive(); p.swap(); enterOnly(p.getEl()); }
     };
-    t(swap, dir || 1, getEl, info || {}).then(finish, finish);
+    t(swap2, dir || 1, getEl, info || {}).then(finish, finish);
   }
 
   // ---- Kutlama: geometrik konfeti ----
@@ -492,15 +713,20 @@
     var layer = document.createElement('div');
     layer.className = 'confetti'; layer.setAttribute('aria-hidden', 'true');
     document.body.appendChild(layer);
-    var neon = skin() === 'kuantum';
-    var colors = neon ? ['#3df2ff', '#b46bff', '#ff4fd8', '#ffffff'] : ['#d9241a', '#f6c018', '#1d4fa3', '#111111'];
-    var n = big ? 70 : 42, items = [];
+    var sk = skin();
+    var neon = sk === 'kuantum';
+    // Her tema kendi renkleriyle kutlar; sakin temalarda parçalar daha az ve yumuşak.
+    var calm = sk === 'sakin' || sk === 'ay' || sk === 'aurora' || sk === 'bulut';
+    var colors = neon ? ['#3df2ff', '#b46bff', '#ff4fd8', '#ffffff']
+      : sk === 'bauhaus' ? ['#d9241a', '#f6c018', '#1d4fa3', '#111111']
+      : [cssVar('--felt') || '#2f9a91', cssVar('--brass') || '#c27a2c', cssVar('--felt-2') || '#58b3ab', cssVar('--good') || '#2e8a5c'];
+    var n = calm ? (big ? 44 : 26) : (big ? 70 : 42), items = [];
     for (var i = 0; i < n; i++) {
       var el = document.createElement('i');
       var kind = i % 4;
       if (kind === 0) { el.className = 'c'; el.style.background = colors[0]; }
       else if (kind === 1) { el.style.background = colors[1]; }
-      else if (kind === 2) { el.className = 't'; }
+      else if (kind === 2) { if (sk === 'bauhaus') el.className = 't'; else { el.className = 'c'; el.style.background = colors[2]; } }
       else { el.style.background = colors[3]; el.style.width = '22px'; el.style.height = '6px'; }
       if (neon) {
         var col = colors[i % 4];
@@ -542,6 +768,11 @@
     DEFAULT: DEFAULT,
     skin: skin,
     setSkin: setSkin,
+    themeSwap: themeSwap,
+    slideIn: slideIn,
+    resultIn: resultIn,
+    anim: anim,
+    reduced: reduced,
     valid: valid,
     run: run,
     placeIndicator: placeIndicator,

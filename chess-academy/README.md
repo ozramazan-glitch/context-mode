@@ -25,7 +25,7 @@ node chess-academy/tools/build-single.mjs dist/satranc-akademisi.html
 | **Öğrenme Yolu** (birinci arayüz) | 8 bölüm, 37 ders, 55 alıştırma. Bölümler en basitten en deneyimli oyuncu profiline sıralıdır: Sıfırdan Başlayan → Kuralları Öğrenen → İlk Oyunlarını Oynayan → Hobi Oyuncusu → Gelişen Kulüp Oyuncusu → Turnuva Adayı → Deneyimli Oyuncu → Usta Adayı. Bir bölümün alıştırmalarının en az %75’i çözülünce sıradaki bölüm açılır. |
 | **Özel Hamleler Atölyesi** (ikinci arayüz) | Piyonun çift adımı, rok, geçerken alma ve terfi: kuralların tam listesi, adım adım gösterim ve 17 alıştırma. **Rok Laboratuvarı**’nda taşları serbestçe yerleştirip rok koşullarının (6 koşul) canlı olarak nasıl değiştiğini görürsünüz. |
 | **2B / 3B görünüm** | Üst menüdeki düğmeyle tüm tahtalar 2B ile 3B arasında geçer. 3B tahta sürüklenerek döndürülür, tekerlek veya iki parmakla yakınlaştırılır; hamleler 3B’de de tıklanarak yapılır. |
-| **Temalar ve hareket** | Varsayılan tema **Kuantum Arena** (fütüristik, koyu): arka planda WebGL uzay sahnesi (yıldız alanı, ızgara zemin, dönen hologram tahta), sayfa geçişinde yıldızların ışık hızına geçmesi ve tarayıcı çizgisiyle açılan sayfa, şifre çözer gibi beliren başlıklar, hologram kenarlı menü göstergesi, imleci izleyen ışık hâlesi ve panel ışığı, neon taşlar, neon kıvılcım kutlaması. Ayarlar'dan seçilebilen **Bauhaus Satranç**: taşlar Josef Hartwig'in 1920'lerdeki Bauhaus takımından esinlenen geometrik biçimlerdir (kale küp, fil X, at L, vezir küre, şah döndürülmüş küp); biçim hareketi anlatır. GSAP ile animasyonlar: üç renkli perde sayfa geçişi, renk ve biçim değiştirerek yaylanan menü göstergesi, zıplayan menü harfleri, imleci izleyen kartlar, sayan sayaçlar, doğru çözümde geometrik konfeti. 3B görünümde de taşlar küp ve kürelerden oluşur. Ayarlar'dan seçilebilen diğer temalar: Satranç Kitabı ( kayan siyah menü kapsülü, sayfa geçişinde çapraz akan dama kareleri), Gece Turnuvası (koyu cam paneller, yaylanan parlak menü, odak geçişi), Mermer ve Pirinç (uzayıp toplanan pirinç çizgi, kartların sırayla yükselmesi), Satranç Saati (basılan tuş sekmeler, LCD göstergeler, kaydırma geçişi) ve ilk tema Kulüp Salonu. Telefonda menü, animasyonlu bir çekmeceye dönüşür. Sistemde “hareketi azalt” açıksa animasyonlar kapanır. |
+| **Temalar ve hareket** | 11 tema, Ayarlar'da üç grup hâlinde. **Sakin fütüristik** (göz yormayan; saf siyah/beyaz zemin yok, soluk vurgu, 30 saniyeden uzun döngülü yavaş ortam hareketi): **Kuantum Sakin** (varsayılan; koyu lacivert cam, yavaş ve soluk yıldız alanı, yumuşak derinlik geçişi), **Ay Üssü** (açık gri cam paneller, süzülen ışık küreleri, katman katman yükselen sayfa), **Aurora** (koyu arduvaz, ağır kuzey ışığı bandı, ince çizgi menü göstergesi), **Bulut Şehri** (pastel gökyüzü, süzülen bulutlar; sayfa değişince bulutlar bir an hızlanır, sayfa yana süzülür). **Canlı**: **Kuantum Arena** (WebGL uzay sahnesi, ışık hızı geçişi, neon taşlar), **Bauhaus Satranç** (Josef Hartwig'in 1920'lerdeki takımından esinlenen geometrik taşlar, GSAP ile üç renkli perde geçişi). **Klasik**: Satranç Kitabı, Gece Turnuvası, Mermer ve Pirinç, Satranç Saati, Kulüp Salonu. Tüm temalarda: tema değiştirince yeni tema seçilen satırdan dairesel dalgayla yayılır; taş hamlede hafifçe kalkarak kayar, alınan taş dönerek kaybolur; doğru hamlede karede halka dalgası, yanlış hamlede taş titrer; şah çekilen kare nabız gibi belirir; ders kartları gidilen yönden kayar; sonuç kartı yaylanarak açılır, yıldızlar tek tek yanar, kazanılan XP seviye göstergesine uçar; sayılar sayar, çubuklar dolar; ilk ekranın altındaki kartlar kaydırınca belirir. Telefonda menü animasyonlu bir çekmeceye dönüşür. Sistemde “hareketi azalt” açıksa animasyonlar kapanır. |
 | **Gelişim Paneli** | Seviye ve unvan, XP çubuğu, tahmini bulmaca puanı ve grafiği, oyuncu profili yolculuğu (8 basamak), 7 beceri alanı için radar grafiği ve tablo, son 14 günün XP grafiği, günlük seri, 17 rozet, etkinlik geçmişi, öneriler, istatistikler, yedekleme/geri yükleme/sıfırlama. |
 | **Seviye belirleme sınavı** | Satranç bilenler için: her bölümden bir soru; ilk hatada biter ve geçilen bölümler açılır. |
 | **Serbest oyun** | Bilgisayara karşı üç zorluk seviyesinde, beyaz veya siyahla tam oyun. |
@@ -57,7 +57,9 @@ node chess-academy/tests/run-all.mjs
 
 ## Sınırlamalar
 
-- **Animasyonlar** GSAP (3.12.5) kitaplığını internetten indirir; indirilemezse daha sade, tarayıcının kendi animasyonlarıyla çalışır.
+- **Animasyonlar** Bauhaus ve Kuantum Arena'da GSAP (3.12.5) kitaplığını internetten indirir; indirilemezse daha sade, tarayıcının kendi animasyonlarıyla çalışır. Diğer temalar yalnızca tarayıcının kendi animasyonlarını kullanır.
+- **Tema değiştirme dalgası** tarayıcının View Transitions özelliğini kullanır (Chrome/Edge 111+, Safari 18+); desteklemeyen tarayıcıda tema animasyonsuz, hemen değişir.
+- **Kuantum Sakin ve Kuantum Arena** arka planı WebGL ile çizilir ve three.js'i internetten indirir; indirilemezse düz koyu zemin kalır.
 - **3B görünüm** ilk açılışta three.js (r128) grafik kitaplığını internetten (cdnjs, olmazsa jsDelivr) indirir. İnternet
   yoksa veya cihaz WebGL desteklemiyorsa uygulama bunu bildirir ve 2B görünüme döner.
 - **İlerleme** tarayıcının yerel depolamasında (localStorage) tutulur; tarayıcı verisi silinirse kaybolur. Gelişim
@@ -74,7 +76,7 @@ node chess-academy/tests/run-all.mjs
 ```
 chess-academy/
 ├── index.html          Uygulama kabuğu
-├── css/style.css       Tasarım (açık/koyu tema)
+├── css/style.css       Tasarım (11 tema)
 ├── js/engine.js        Kural motoru, notasyon, mat arayıcı, yapay zekâ
 ├── js/kpk.js           Şah+Piyon–Şah çözücüsü
 ├── js/kxk.js           Şah+Vezir/Kale–Şah çözücüsü
@@ -84,7 +86,7 @@ chess-academy/
 ├── js/board.js         2B tahta ve ortak etkileşim
 ├── js/board3d.js       3B tahta (three.js)
 ├── js/motion.js        Temalar, menü animasyonu, sayfa geçişleri, kutlama (GSAP)
-├── js/scene.js         Kuantum Arena arka plan sahnesi (WebGL)
+├── js/scene.js         Kuantum Arena / Kuantum Sakin arka plan sahnesi (WebGL)
 ├── js/trainer.js       Ders oynatıcı ve alıştırma kuralları
 ├── js/views.js         Ekranlar
 ├── js/app.js           Yönlendirme, ayarlar

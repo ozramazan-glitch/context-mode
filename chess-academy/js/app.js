@@ -128,11 +128,18 @@
     settingsPanel.appendChild(h('h2', { text: 'Ayarlar' }));
     // Tema seçimi
     var list = h('div.skin-list', { role: 'radiogroup', 'aria-label': 'Tema' });
+    var group = null;
     M.SKINS.forEach(function (sk) {
+      if (sk.group && sk.group !== group) { group = sk.group; list.appendChild(h('span.skin-group', { text: group, 'aria-hidden': 'true' })); }
       var id = 'skin-' + sk.id;
       var rb = h('input', { type: 'radio', name: 'skin', id: id, value: sk.id });
       rb.checked = M.skin() === sk.id;
-      rb.addEventListener('change', function () { if (rb.checked) applySkin(sk.id, true); });
+      rb.addEventListener('change', function () {
+        if (!rb.checked) return;
+        // Yeni tema seçilen satırdan dalga gibi yayılır.
+        var r = rb.closest('.skin-opt').getBoundingClientRect();
+        applySkin(sk.id, true, r.left + 24, r.top + r.height / 2);
+      });
       var sw = h('span.sw');
       sk.sw.forEach(function (c) { sw.appendChild(h('span', { style: 'background:' + c })); });
       list.appendChild(h('label.skin-opt', { for: id }, rb, h('b', { text: sk.name }), h('span.small.muted', { text: sk.note }), sw));
@@ -158,18 +165,20 @@
   document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !settingsPanel.hidden) { settingsPanel.hidden = true; settingsBtn.focus(); } });
 
   // ---- Tema ----
-  function applySkin(id, announce) {
-    M.setSkin(id);
-    P.state.settings.skinPicked = true;
-    P.setSetting('skin', M.skin());
-    // 3B tahta renklerini CSS belirteçlerinden okur: yeni temayla yeniden kur.
-    root.BoardView.instances.forEach(function (b) {
-      if (!b.destroyed && b.modeName === '3d') { b.modeName = null; b.setMode('3d'); }
-    });
-    root.BoardView.refreshAll();
+  function applySkin(id, announce, x, y) {
+    M.themeSwap(function () {
+      M.setSkin(id);
+      P.state.settings.skinPicked = true;
+      P.setSetting('skin', M.skin());
+      // 3B tahta renklerini CSS belirteçlerinden okur: yeni temayla yeniden kur.
+      root.BoardView.instances.forEach(function (b) {
+        if (!b.destroyed && b.modeName === '3d') { b.modeName = null; b.setMode('3d'); }
+      });
+      root.BoardView.refreshAll();
+    }, x, y);
     if (announce) {
-      var sk = M.SKINS.filter(function (x) { return x.id === M.skin(); })[0];
-      UI.toast('Tema: ' + (sk ? sk.name : M.skin()));
+      var sk = M.SKINS.filter(function (x) { return x.id === id; })[0];
+      UI.toast('Tema: ' + (sk ? sk.name : id));
     }
   }
 

@@ -103,7 +103,7 @@
       lessons: {}, ex: {}, unlocked: { s1: true }, daily: {}, log: [], badges: {},
       games: { played: 0, won: 0, drawn: 0, lost: 0 }, timeSpent: 0,
       placement: null,
-      settings: { mode: '2d', coords: true, legal: true, anim: true, skin: 'kuantum', skinPicked: false }
+      settings: { mode: '2d', coords: true, legal: true, anim: true, skin: 'sakin', skinPicked: false }
     };
   }
   function migrate(s) {

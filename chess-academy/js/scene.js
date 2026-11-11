@@ -4,13 +4,32 @@
  * ızgara zemin ve yavaşça dönen hologram satranç tahtası. Fare hareketiyle
  * kamera hafifçe kayar. Sekme görünmezken durur; "hareketi azalt" açıksa
  * tek kare çizilir.
+ *
+ * İki kip vardır: 'arena' (Kuantum Arena: parlak, hızlı) ve 'calm'
+ * (Kuantum Sakin: soluk ve yavaş yıldızlar, ızgara ve kristaller gizli,
+ * ışık hızı geçişi çok hafif).
  */
 (function (root) {
   'use strict';
   var S = { on: false };
   var T, renderer, scene, camera, canvas, starGeo, starArr, grid, holo, crystals = [];
   var raf = 0, last = 0, warpBoost = 0, mouse = { x: 0, y: 0 }, N = 0;
-  var BASE = 0.9;
+  var BASE = 0.9, MODE = 'arena', starMat, edgeMat, sqMats = [];
+  var MODES = {
+    arena: { base: 0.9, warp: 26, star: 0xa8e6ff, starOp: 0.85, fog: 0x05070f, grid: true, crystals: true, sq: [0.16, 0.07], edge: 0x3df2ff, edgeOp: 0.75, spin: 0.12 },
+    calm: { base: 0.16, warp: 5, star: 0xc9d6f0, starOp: 0.38, fog: 0x0b1020, grid: false, crystals: false, sq: [0.06, 0.03], edge: 0x7fd3e0, edgeOp: 0.22, spin: 0.04 }
+  };
+  function applyMode() {
+    var m = MODES[MODE];
+    BASE = m.base;
+    if (!renderer) return;
+    starMat.color.setHex(m.star); starMat.opacity = m.starOp;
+    scene.fog.color.setHex(m.fog);
+    grid.visible = m.grid;
+    crystals.forEach(function (c) { c.visible = m.crystals; });
+    sqMats[0].opacity = m.sq[0]; sqMats[1].opacity = m.sq[1];
+    edgeMat.color.setHex(m.edge); edgeMat.opacity = m.edgeOp;
+  }
 
   function reduced() {
     try { return root.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
@@ -39,7 +58,8 @@
     }
     starGeo = new T.BufferGeometry();
     starGeo.setAttribute('position', new T.BufferAttribute(starArr, 3));
-    var stars = new T.LineSegments(starGeo, new T.LineBasicMaterial({ color: 0xa8e6ff, transparent: true, opacity: 0.85, blending: T.AdditiveBlending, depthWrite: false }));
+    starMat = new T.LineBasicMaterial({ color: 0xa8e6ff, transparent: true, opacity: 0.85, blending: T.AdditiveBlending, depthWrite: false });
+    var stars = new T.LineSegments(starGeo, starMat);
     scene.add(stars);
 
     // Sonsuz ızgara zemin
@@ -60,7 +80,9 @@
       sq.rotation.x = -Math.PI / 2;
       holo.add(sq);
     }
-    holo.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(8.4, 0.25, 8.4)), new T.LineBasicMaterial({ color: 0x3df2ff, transparent: true, opacity: 0.75 })));
+    sqMats = [mA, mB];
+    edgeMat = new T.LineBasicMaterial({ color: 0x3df2ff, transparent: true, opacity: 0.75 });
+    holo.add(new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(8.4, 0.25, 8.4)), edgeMat));
     // Tahta üstünde süzülen tel kafes taşlar (geometrik "veri kristalleri")
     var shapes = [new T.OctahedronGeometry(0.55), new T.BoxGeometry(0.7, 0.7, 0.7), new T.IcosahedronGeometry(0.5), new T.TetrahedronGeometry(0.6), new T.CylinderGeometry(0.3, 0.45, 0.9, 6)];
     for (var k = 0; k < 7; k++) {
@@ -71,6 +93,7 @@
       crystals.push(w);
     }
     scene.add(holo);
+    applyMode();
 
     resize();
     root.addEventListener('resize', resize);
@@ -106,7 +129,7 @@
     starGeo.attributes.position.needsUpdate = true;
     grid.position.z = (grid.position.z + v * 0.6) % 2.5;
     if (!once) {
-      holo.rotation.y += dt * 0.12;
+      holo.rotation.y += dt * MODES[MODE].spin;
       crystals.forEach(function (c, i) {
         c.rotation.x += dt * (0.3 + i * 0.05);
         c.rotation.y += dt * 0.45;
@@ -150,7 +173,12 @@
     if (raf) cancelAnimationFrame(raf);
     raf = 0;
   };
-  // Sayfa geçişinde ışık hızı
-  S.warp = function () { warpBoost = 26; };
+  // Sayfa geçişinde ışık hızı (sakin kipte yalnızca hafif bir hızlanma)
+  S.warp = function () { warpBoost = MODES[MODE].warp; };
+  S.setMode = function (m) {
+    if (!MODES[m] || m === MODE) return;
+    MODE = m; applyMode();
+    if (renderer && S.on && (reduced() || !raf)) frame(performance.now(), true);
+  };
   root.Scene = S;
 })(typeof window !== 'undefined' ? window : globalThis);

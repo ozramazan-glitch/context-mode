@@ -59,10 +59,14 @@
       h('div.trainer-grid', boardHost, panel));
     board = new root.BoardView(boardHost, { interactive: false });
 
+    var shown = -1;
     function show() {
       var c = lesson.cards[idx];
       counter.textContent = 'Kart ' + (idx + 1) + ' / ' + lesson.cards.length;
       text.innerHTML = '<p>' + c.text + '</p>';
+      // Kart değişince metin gidilen yönden kayarak gelir
+      if (shown >= 0 && shown !== idx && root.Motion) root.Motion.slideIn(text, idx > shown ? 1 : -1);
+      shown = idx;
       Array.prototype.forEach.call(dots.children, function (d, i) { d.className = i === idx ? 'on' : i < idx ? 'done' : ''; });
       navPrev.disabled = idx === 0;
       navNext.querySelector('span').textContent = idx < lesson.cards.length - 1 ? 'Sonraki' : (P.state.lessons[lesson.id] ? 'Derse dön' : 'Dersi bitir');
@@ -200,6 +204,7 @@
       row.appendChild(UI.btn('Tekrar dene', { kind: 'secondary', icon: 'reset', onClick: function () { cleanup(); ctx.onRetry(); } }));
       row.appendChild(UI.btn(ctx.backLabel || 'Bölüme dön', { kind: 'ghost', onClick: function () { cleanup(); ctx.onExit(); } }));
       resultEl.appendChild(row);
+      if (root.Motion) root.Motion.resultIn(resultEl, res.status === 'solved' ? res.xp : 0);
       var first = row.querySelector('button'); if (first) first.focus();
     }
 
